@@ -1,6 +1,6 @@
 /**
- * RANJEET'S CONTRIBUTION WORKPLACE · INTERACTIVE ENGINE
- * Real-time GitHub Telemetry, Web Audio Synthesizer, Canvas Graphs & Architecture HUD
+ * RANJEET'S CONTRIBUTION WORKPLACE · INTERACTIVE ENGINE v2.6
+ * Real-time GitHub Telemetry, 3D Perspective Tilt, Radar Stress Chart & Cert Lightbox
  * Copyright (c) 2026 Ranjeet Kumar Gupta
  */
 
@@ -18,16 +18,18 @@
     lightingMode: 0, // 0: Normal, 1: Night, 2: Cyberpunk
     fanSpeed: 1, // 0: Quiet, 1: Normal, 2: Turbo
     activeTab: 'grafana',
+    timeRange: '24h',
     profile: null,
     repos: [],
     events: [],
     contributions: [],
-    totalContributions: 319,
+    totalContributions: 322,
     activeNode: null,
     cpuBase: 42,
     ramBase: 68,
     p95Base: 132,
-    pcCpuBase: 38
+    pcCpuBase: 38,
+    radarTick: 0
   };
 
   // --- DOM CACHE ---
@@ -84,7 +86,11 @@
       playTone(220, 'sawtooth', 0.15, 0.05);
       setTimeout(() => playTone(440, 'sawtooth', 0.2, 0.05), 100);
     },
-    toggle: () => playTone(660, 'sine', 0.06, 0.04)
+    toggle: () => playTone(660, 'sine', 0.06, 0.04),
+    boot: () => {
+      playTone(440, 'sine', 0.15, 0.07);
+      setTimeout(() => playTone(880, 'triangle', 0.25, 0.08), 120);
+    }
   };
 
   // --- TERMINAL LOGGING ---
@@ -112,6 +118,63 @@
   setInterval(updateClock, 1000);
   updateClock();
 
+  // --- 3D PERSPECTIVE TILT ON STAGE ---
+  function init3DTilt() {
+    const frame = $('workstationFrame');
+    const stage = $('stage');
+    if (!frame || !stage) return;
+
+    frame.addEventListener('mousemove', (e) => {
+      const rect = frame.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      // Max rotation: 3.5 degrees for subtle high-tech 3D depth
+      const rotX = ((y - centerY) / centerY) * -3.2;
+      const rotY = ((x - centerX) / centerX) * 3.2;
+
+      stage.style.transform = `rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) scale3d(1.008, 1.008, 1.008)`;
+    });
+
+    frame.addEventListener('mouseleave', () => {
+      stage.style.transform = 'rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+    });
+  }
+
+  // --- FIRST VISIT BOOT SEQUENCE ---
+  function initBootSequence() {
+    const overlay = $('bootOverlay');
+    const skipBtn = $('bootSkipBtn');
+    const replayBtn = $('replayBootBtn');
+
+    function closeBoot() {
+      sfx.boot();
+      if (overlay) overlay.classList.add('hidden');
+      sessionStorage.setItem('ranjeet_boot_shown', 'true');
+      logTerminal('[SYS] Telemetry stream unlocked. Workstation 3D view operational.', 'success');
+    }
+
+    if (skipBtn) skipBtn.addEventListener('click', closeBoot);
+
+    // If already visited this session, hide overlay
+    if (sessionStorage.getItem('ranjeet_boot_shown') === 'true') {
+      if (overlay) overlay.classList.add('hidden');
+    }
+
+    if (replayBtn) {
+      replayBtn.addEventListener('click', () => {
+        sfx.click();
+        if (overlay) {
+          overlay.classList.remove('hidden');
+          // Re-trigger audio
+          setTimeout(sfx.boot, 200);
+        }
+      });
+    }
+  }
+
   // --- GITHUB API DATA FETCHING ---
   async function fetchJSON(url) {
     const res = await fetch(url, { headers: { Accept: 'application/vnd.github+json' } });
@@ -127,7 +190,6 @@
     logTerminal('Contacting GitHub Public API & Contributions API...', 'info');
 
     try {
-      // Parallel fetch
       const [profileData, reposData, eventsData, contribData] = await Promise.allSettled([
         fetchJSON(`${API_GITHUB}/users/${USERNAME}`),
         fetchJSON(`${API_GITHUB}/users/${USERNAME}/repos?per_page=100&sort=updated`),
@@ -138,34 +200,32 @@
       // Profile
       if (profileData.status === 'fulfilled') {
         state.profile = profileData.value;
-        $('statRepos').textContent = state.profile.public_repos || 20;
+        $('statRepos').textContent = state.profile.public_repos || 21;
         $('bioName').textContent = state.profile.name || USERNAME;
-        logTerminal(`[OK] Loaded profile: ${state.profile.name || USERNAME} (${state.profile.public_repos} public repositories).`, 'success');
       }
 
-      // Repositories & Languages
+      // Repositories
       if (reposData.status === 'fulfilled') {
         state.repos = reposData.value;
         const totalStars = state.repos.reduce((acc, r) => acc + (r.stargazers_count || 0), 0);
         $('statStars').textContent = totalStars;
-        renderLanguageTrack(state.repos);
-        renderFeaturedRepos(state.repos);
-        logTerminal(`[OK] Parsed ${state.repos.length} repositories, total stars: ${totalStars}.`, 'success');
       }
 
-      // Activity / Events
+      // Activity Feed
       if (eventsData.status === 'fulfilled') {
         state.events = eventsData.value;
         renderActivityFeed(state.events);
-        logTerminal(`[OK] Streamed ${state.events.length} recent public events from GitHub feed.`, 'success');
       }
 
       // Contributions
       if (contribData.status === 'fulfilled' && contribData.value.contributions) {
         state.contributions = contribData.value.contributions;
-        state.totalContributions = contribData.value.total?.lastYear || 319;
-        $('statContribs').textContent = state.totalContributions;
-        $('headerContribCount').textContent = `${state.totalContributions} COMMITS (LAST YEAR)`;
+        // Calculate dynamic total from API array or total object
+        const sum = state.contributions.reduce((acc, d) => acc + (d.count || 0), 0);
+        state.totalContributions = Math.max(322, sum, contribData.value.total?.lastYear || 322);
+        $('statContribs').textContent = `${state.totalContributions}+`;
+        $('headerContribCount').textContent = `${state.totalContributions} COMMITS (2025-2026)`;
+        $('stressCommitsNum').textContent = `${state.totalContributions}+`;
         renderContributionGrid(state.contributions);
         logTerminal(`[OK] Mounted ${state.totalContributions} live GitHub contributions into workplace grid!`, 'success');
       } else {
@@ -177,45 +237,18 @@
       $('lastSyncedTime').textContent = `Last synced: ${new Date().toLocaleTimeString()}`;
 
     } catch (err) {
-      logTerminal(`[WARN] API connection error: ${err.message}. Using cached baseline telemetry.`, 'warn');
+      logTerminal(`[WARN] API connection error: ${err.message}. Using baseline telemetry.`, 'warn');
       if (apiStatusText) apiStatusText.textContent = 'GITHUB TELEMETRY ACTIVE (CACHED)';
       if (statusPulse) statusPulse.style.background = '#38e1ff';
       renderFallbackContributionGrid();
     }
   }
 
-  // --- LANGUAGE TRACKER ---
-  function renderLanguageTrack(repos) {
-    const counts = {};
-    repos.forEach(r => {
-      if (r.language) counts[r.language] = (counts[r.language] || 0) + 1;
-    });
-    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-    const total = sorted.reduce((sum, [, n]) => sum + n, 0) || 1;
-    
-    const container = $('languageListContainer');
-    if (!container || sorted.length === 0) return;
-    
-    container.innerHTML = sorted.slice(0, 5).map(([lang, count]) => {
-      const pct = Math.round((count / total) * 100);
-      return `
-        <div class="lang-row">
-          <b>${lang}</b>
-          <div class="bar"><i style="width: ${pct}%"></i></div>
-          <span>${pct}%</span>
-        </div>
-      `;
-    }).join('');
-  }
-
   // --- ACTIVITY FEED ---
   function renderActivityFeed(events) {
     const container = $('activityFeedContainer');
     if (!container) return;
-    if (!events || events.length === 0) {
-      container.innerHTML = '<div class="feed-item"><span class="repo">No recent public events</span></div>';
-      return;
-    }
+    if (!events || events.length === 0) return;
 
     container.innerHTML = events.slice(0, 4).map(e => {
       const type = (e.type || 'Event').replace('Event', '').toUpperCase();
@@ -232,40 +265,12 @@
     }).join('');
   }
 
-  // --- FEATURED REPOSITORIES ---
-  function renderFeaturedRepos(repos) {
-    const grid = $('reposGrid');
-    if (!grid || !repos || repos.length === 0) return;
-
-    // Pick top 4 noteworthy repositories
-    const topRepos = repos.slice(0, 4);
-    grid.innerHTML = topRepos.map(r => {
-      const lang = r.language || 'Code';
-      const langClass = (r.language || 'default').toLowerCase();
-      const desc = r.description || 'DevOps and cloud systems automation repository.';
-      return `
-        <a href="${r.html_url}" target="_blank" rel="noopener" class="repo-card">
-          <div class="repo-card-head">
-            <span class="repo-name">${r.name}</span>
-            <span class="lang-tag ${langClass}">${lang}</span>
-          </div>
-          <p class="repo-desc">${desc}</p>
-          <div class="repo-card-footer">
-            <span>⭐ ${r.stargazers_count || 0}</span>
-            <span>🔄 ${new Date(r.updated_at).toLocaleDateString()}</span>
-          </div>
-        </a>
-      `;
-    }).join('');
-  }
-
   // --- CONTRIBUTION HEATMAP GRID ---
   function renderContributionGrid(days) {
     const grid = $('heatmapGrid');
     if (!grid) return;
     grid.innerHTML = '';
 
-    // Take the last 364 days (52 weeks x 7 days)
     const recentDays = days.slice(-364);
 
     recentDays.forEach(d => {
@@ -301,7 +306,6 @@
       date.setDate(today.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
       
-      // Seeded realistic pseudo pattern
       const rand = (Math.sin(i * 12.3) + 1) / 2;
       let count = 0;
       let level = 0;
@@ -342,7 +346,110 @@
     if (tooltip) tooltip.style.display = 'none';
   }
 
-  // --- CANVAS ANIMATIONS ENGINE ---
+  // --- 360° / 90° POLAR RADAR GRAPH (STRESS LOAD) ---
+  function initRadarGraph() {
+    const canvas = $('radarCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    const maxR = w * 0.4;
+
+    // Metrics configuration:
+    // North (90° / -PI/2): Commits (94%)
+    // East (360°/0° / 0 rad): PRs (68%)
+    // South (270° / PI/2): Forks (48%)
+    // West (180° / PI): Stars (38%)
+    const axes = [
+      { name: 'Commits (90°)', val: 0.94, num: '322+', color: '#ff2a55', angle: -Math.PI / 2 },
+      { name: 'PRs (360°)', val: 0.68, num: '28', color: '#ff9028', angle: 0 },
+      { name: 'Forks (270°)', val: 0.48, num: '16', color: '#38e1ff', angle: Math.PI / 2 },
+      { name: 'Stars (180°)', val: 0.38, num: '12', color: '#ba54ff', angle: Math.PI }
+    ];
+
+    function renderRadar() {
+      state.radarTick++;
+      ctx.clearRect(0, 0, w, h);
+
+      // 1. Concentric circles (25%, 50%, 75%, 100%)
+      ctx.strokeStyle = '#142a4a';
+      ctx.lineWidth = 1;
+      [0.25, 0.5, 0.75, 1.0].forEach(level => {
+        ctx.beginPath();
+        ctx.arc(cx, cy, maxR * level, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+
+      // 2. Cross Axes (90° vertical & 360° horizontal)
+      ctx.strokeStyle = '#1c3d69';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      // Horizontal
+      ctx.moveTo(cx - maxR - 10, cy);
+      ctx.lineTo(cx + maxR + 10, cy);
+      // Vertical
+      ctx.moveTo(cx, cy - maxR - 10);
+      ctx.lineTo(cx, cy + maxR + 10);
+      ctx.stroke();
+
+      // 3. Dynamic Pulsing Polygon Web
+      const pulse = Math.sin(state.radarTick * 0.05) * 0.03;
+      ctx.beginPath();
+      axes.forEach((axis, i) => {
+        const r = maxR * (axis.val + pulse);
+        const x = cx + Math.cos(axis.angle) * r;
+        const y = cy + Math.sin(axis.angle) * r;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.closePath();
+
+      // Gradient Fill
+      const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, maxR);
+      grad.addColorStop(0, 'rgba(56, 225, 255, 0.35)');
+      grad.addColorStop(0.7, 'rgba(186, 84, 255, 0.2)');
+      grad.addColorStop(1, 'rgba(255, 42, 85, 0.15)');
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.strokeStyle = '#38e1ff';
+      ctx.lineWidth = 2;
+      ctx.shadowColor = '#38e1ff';
+      ctx.shadowBlur = 8;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // 4. Axis Data Points & Labels
+      axes.forEach(axis => {
+        const r = maxR * (axis.val + pulse);
+        const x = cx + Math.cos(axis.angle) * r;
+        const y = cy + Math.sin(axis.angle) * r;
+
+        // Glowing dot
+        ctx.fillStyle = axis.color;
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Label on outer edge
+        const lx = cx + Math.cos(axis.angle) * (maxR + 18);
+        const ly = cy + Math.sin(axis.angle) * (maxR + 18);
+        ctx.font = '9px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#a6c5eb';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`${axis.name.split(' ')[0]} (${axis.num})`, lx, ly);
+      });
+
+      requestAnimationFrame(renderRadar);
+    }
+
+    renderRadar();
+  }
+
+  // --- CANVAS ANIMATIONS ENGINE (GRAFANA) ---
   function initCanvasGraphs() {
     const cGreen = $('canvasGreenWave');
     const cYellow = $('canvasYellowWave');
@@ -356,6 +463,9 @@
 
     function renderFrame() {
       tick++;
+
+      // Time scale multiplier (1h: fast, 24h: normal, 7d: slower/denser)
+      const speed = state.timeRange === '1h' ? 2.2 : state.timeRange === '7d' ? 0.7 : 1.3;
 
       // 1. Green Mountain Wave Canvas
       if (cGreen) {
@@ -371,7 +481,7 @@
         ctx.beginPath();
         ctx.moveTo(0, h);
         for (let x = 0; x <= w; x += 6) {
-          const y = h - 10 - Math.sin((x + tick * 1.5) * 0.08) * 10 - Math.cos((x + tick * 0.8) * 0.15) * 6;
+          const y = h - 10 - Math.sin((x + tick * speed) * 0.08) * 10 - Math.cos((x + tick * 0.8) * 0.15) * 6;
           ctx.lineTo(x, y);
         }
         ctx.lineTo(w, h);
@@ -394,7 +504,7 @@
         ctx.beginPath();
         ctx.moveTo(0, h);
         for (let x = 0; x <= w; x += 6) {
-          const y = h - 8 - Math.sin((x + tick * 1.2) * 0.06) * 8 - Math.sin((x - tick * 1.8) * 0.12) * 5;
+          const y = h - 8 - Math.sin((x + tick * speed * 0.8) * 0.06) * 8 - Math.sin((x - tick * 1.5) * 0.12) * 5;
           ctx.lineTo(x, y);
         }
         ctx.lineTo(w, h);
@@ -492,14 +602,6 @@
         const h = cPacket.height = cPacket.offsetHeight;
         ctx.clearRect(0, 0, w, h);
 
-        // Connections:
-        // Users (w*0.1, h*0.42) -> ALB (w*0.31, h*0.42)
-        // ALB (w*0.31, h*0.42) -> EKS (w*0.55, h*0.35)
-        // EKS (w*0.55, h*0.35) -> RDS (w*0.81, h*0.42)
-        // Users (w*0.1, h*0.42) -> S3 (w*0.31, h*0.78)
-        // Users (w*0.1, h*0.42) -> CloudFront (w*0.56, h*0.78)
-        // EKS (w*0.55, h*0.35) -> CloudWatch (w*0.83, h*0.78)
-
         drawPacket(ctx, w * 0.1, h * 0.42, w * 0.31, h * 0.42, tick, '#38e1ff', 0);
         drawPacket(ctx, w * 0.31, h * 0.42, w * 0.55, h * 0.35, tick, '#ff9028', 25);
         drawPacket(ctx, w * 0.55, h * 0.35, w * 0.81, h * 0.42, tick, '#38e1ff', 50);
@@ -519,7 +621,6 @@
     const px = x1 + (x2 - x1) * progress;
     const py = y1 + (y2 - y1) * progress;
 
-    // Glowing particle
     ctx.fillStyle = color;
     ctx.shadowColor = color;
     ctx.shadowBlur = 6;
@@ -532,13 +633,11 @@
   // --- DYNAMIC METRICS FLUCTUATION ---
   function initMetricsSimulation() {
     setInterval(() => {
-      // Small jitter around realistic values
       const cpu = Math.min(99, Math.max(10, Math.round(state.cpuBase + (Math.random() * 6 - 3))));
       const ram = Math.min(99, Math.max(20, Math.round(state.ramBase + (Math.random() * 4 - 2))));
       const p95 = Math.round(state.p95Base + (Math.random() * 8 - 4));
       const pcCpu = Math.round(state.pcCpuBase + (Math.random() * 4 - 2));
 
-      // Update Left Monitor Gauges
       const gCpu = $('gaugeCpuVal');
       const gRam = $('gaugeRamVal');
       const gP95 = $('gaugeP95Val');
@@ -551,7 +650,6 @@
       if (cpuFill) cpuFill.setAttribute('stroke-dasharray', `${cpu}, 100`);
       if (ramFill) ramFill.setAttribute('stroke-dasharray', `${ram}, 100`);
 
-      // Update text readouts
       const cpuText = $('cpuLoadText');
       if (cpuText) cpuText.textContent = `${cpu}%`;
       const pcCpuText = $('pcCpuReadout');
@@ -635,7 +733,7 @@
     }
   }
 
-  // --- SCREEN TABS (LEFT MONITOR) ---
+  // --- SCREEN TABS (LEFT MONITOR) & TIME RANGE ---
   function initMonitorTabs() {
     const tabs = $$('.screen-tab');
     const panes = $$('.tab-pane');
@@ -653,12 +751,80 @@
         });
 
         if (title) {
-          title.textContent = target === 'grafana' ? 'Grafana' : 'GitHub Telemetry';
+          title.textContent = target === 'grafana' ? 'Grafana' : 'Telemetry';
         }
 
-        logTerminal(`[MONITOR] Switched left display view to: ${target.toUpperCase()}`, 'info');
+        logTerminal(`[MONITOR] Left display tab: ${target.toUpperCase()}`, 'info');
       });
     });
+
+    // Time range buttons
+    const timeBtns = $$('.time-range-btn');
+    timeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sfx.click();
+        timeBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.timeRange = btn.dataset.range;
+        logTerminal(`[GRAFANA] Time range adjusted to: ${state.timeRange.toUpperCase()}`, 'info');
+      });
+    });
+
+    // Gauge Click Handlers
+    const cpuCard = $('gaugeCpuCard');
+    const ramCard = $('gaugeRamCard');
+    const p95Card = $('gaugeP95Card');
+
+    if (cpuCard) cpuCard.addEventListener('click', () => {
+      sfx.click();
+      logTerminal('[METRIC] CPU Core Load: 42.4% avg across 8 cluster nodes.', 'info');
+    });
+    if (ramCard) ramCard.addEventListener('click', () => {
+      sfx.click();
+      logTerminal('[METRIC] Cluster RAM Utilization: 68.1% (21.8 GB / 32.0 GB used).', 'info');
+    });
+    if (p95Card) p95Card.addEventListener('click', () => {
+      sfx.click();
+      logTerminal('[METRIC] P95 Response Latency: 132ms (SLA target < 200ms).', 'info');
+    });
+  }
+
+  // --- CERTIFICATE LIGHTBOX MODAL ---
+  function initCertificates() {
+    const modal = $('certModal');
+    const modalImg = $('certModalImg');
+    const modalTitle = $('certModalTitle');
+    const closeBtn = $('certModalCloseBtn');
+
+    const certK8s = $('certK8s');
+    const certAws = $('certAws');
+
+    if (certK8s) {
+      certK8s.addEventListener('click', () => {
+        sfx.chime();
+        modalTitle.textContent = 'Introduction to Kubernetes (LFS158) · The Linux Foundation';
+        modalImg.src = 'assets/certificates/kubernetes-lfs158.jpeg';
+        modal.classList.add('open');
+        logTerminal('[CREDENTIAL] Inspected Linux Foundation Kubernetes Certificate.', 'info');
+      });
+    }
+
+    if (certAws) {
+      certAws.addEventListener('click', () => {
+        sfx.chime();
+        modalTitle.textContent = 'AWS Cloud Practitioner Essentials · Amazon Web Services';
+        modalImg.src = 'assets/certificates/aws-cloud-practitioner.jpeg';
+        modal.classList.add('open');
+        logTerminal('[CREDENTIAL] Inspected AWS Cloud Practitioner Certificate.', 'info');
+      });
+    }
+
+    if (closeBtn && modal) {
+      closeBtn.addEventListener('click', () => {
+        sfx.click();
+        modal.classList.remove('open');
+      });
+    }
   }
 
   // --- ROOM HOTSPOTS & EASTER EGGS ---
@@ -812,44 +978,12 @@
 
 <!-- Animated Pixel Art Developer Workstation -->
 <a href="https://ranjeetkumarguptabro-maker.github.io/ranjeet-contribution-workplace/">
-  <img src="./assets/workplace-contribution.gif" alt="Ranjeet's Contribution Workplace" width="100%">
+  <img src="https://raw.githubusercontent.com/ranjeetkumarguptabro-maker/ranjeet-contribution-workplace/main/assets/workplace-contribution.gif" alt="Ranjeet's Contribution Workplace" width="100%">
 </a>
 
 <p align="center">
   <i>👉 <b>Click the workstation</b> above to open the real, live interactive telemetry dashboard!</i>
 </p>
-
-</div>
-
----
-
-### 🧰 Cloud & DevOps Engineering Toolset
-
-<div align="center">
-
-<img src="https://cdn.simpleicons.org/git/F05032" height="40" alt="Git" title="Git">&nbsp;&nbsp;
-<img src="https://cdn.simpleicons.org/github/181717" height="40" alt="GitHub" title="GitHub">&nbsp;&nbsp;
-<img src="https://cdn.simpleicons.org/docker/2496ED" height="40" alt="Docker" title="Docker">&nbsp;&nbsp;
-<img src="https://cdn.simpleicons.org/kubernetes/326CE5" height="40" alt="Kubernetes" title="Kubernetes">&nbsp;&nbsp;
-<img src="https://cdn.simpleicons.org/amazonaws/FF9900" height="40" alt="AWS" title="AWS">&nbsp;&nbsp;
-<img src="https://cdn.simpleicons.org/terraform/844FBA" height="40" alt="Terraform" title="Terraform">&nbsp;&nbsp;
-<img src="https://cdn.simpleicons.org/python/3776AB" height="40" alt="Python" title="Python">&nbsp;&nbsp;
-<img src="https://cdn.simpleicons.org/linux/FCC624" height="40" alt="Linux" title="Linux">
-
-<br><br>
-
-<img src="https://cdn.simpleicons.org/grafana/F46800" height="40" alt="Grafana" title="Grafana">&nbsp;&nbsp;
-<img src="https://cdn.simpleicons.org/prometheus/E6522C" height="40" alt="Prometheus" title="Prometheus">&nbsp;&nbsp;
-<img src="https://cdn.simpleicons.org/githubactions/2088FF" height="40" alt="GitHub Actions" title="CI/CD">&nbsp;&nbsp;
-<img src="https://cdn.simpleicons.org/nginx/009639" height="40" alt="NGINX" title="NGINX">
-
-</div>
-
----
-
-<div align="center">
-
-*Building, automating, monitoring, and learning — one commit at a time.*
 
 </div>`;
 
@@ -890,10 +1024,14 @@
   function init() {
     logTerminal('Mounting interactive graphics, canvas telemetry, and audio engine...', 'info');
     
+    initBootSequence();
+    init3DTilt();
     initCanvasGraphs();
+    initRadarGraph();
     initMetricsSimulation();
     initArchitectureNodes();
     initMonitorTabs();
+    initCertificates();
     initRoomHotspots();
     initEmbedModal();
 

@@ -18,6 +18,32 @@
 </head>
 <body class="theme-default">
 
+  <!-- FIRST VISIT CYBER BOOT SEQUENCE OVERLAY -->
+  <div class="boot-overlay" id="bootOverlay">
+    <div class="boot-terminal">
+      <div class="boot-scanline"></div>
+      <div class="boot-header">
+        <div class="boot-dots">
+          <span class="b-dot red"></span>
+          <span class="b-dot yellow"></span>
+          <span class="b-dot green"></span>
+        </div>
+        <div class="boot-title">RANJEET.DEV // WORKSTATION TELEMETRY BOOT v2.6</div>
+      </div>
+      <div class="boot-logs" id="bootLogs">
+        <div class="b-line">[0.001] Powering on workstation holographic display matrix...</div>
+        <div class="b-line green">[0.045] CRT scanlines synchronized at 60 FPS.</div>
+        <div class="b-line">[0.082] Calibrating Grafana Telemetry Engine: CPU, RAM, P95 dials...</div>
+        <div class="b-line cyan">[0.124] Initializing AWS VPC 10.0.0.0/16 blueprint & packet routing...</div>
+        <div class="b-line yellow">[0.189] Syncing live contribution grid (322+ commits from GitHub API)...</div>
+        <div class="b-line green">[0.240] ALL SYSTEMS ONLINE & TELEMETRY STREAMING.</div>
+      </div>
+      <div class="boot-action">
+        <button class="boot-skip-btn" id="bootSkipBtn">INITIALIZE DASHBOARD &rarr;</button>
+      </div>
+    </div>
+  </div>
+
   <!-- BACKGROUND GRID ACCENT -->
   <div class="cyber-grid-bg"></div>
 
@@ -40,7 +66,7 @@
         </div>
         <div class="telemetry-pill commit-pill">
           <span class="icon">⚡</span>
-          <span id="headerContribCount">319 COMMITS (2025-2026)</span>
+          <span id="headerContribCount">322 COMMITS (2025-2026)</span>
         </div>
         <div class="telemetry-pill clock-pill">
           <span class="icon">🕒</span>
@@ -49,9 +75,13 @@
       </div>
 
       <div class="hud-controls">
+        <button id="replayBootBtn" class="hud-btn" title="Replay 3D Boot Sequence">
+          <span class="btn-icon">⚡</span>
+          <span class="btn-label">REPLAY BOOT</span>
+        </button>
         <button id="themeToggleBtn" class="hud-btn" title="Toggle Lighting Mode">
           <span class="btn-icon">💡</span>
-          <span class="btn-label" id="themeLabel">LIGHTING</span>
+          <span class="btn-label" id="themeLabel">STUDIO</span>
         </button>
         <button id="sfxToggleBtn" class="hud-btn" title="Toggle 8-bit Audio SFX">
           <span class="btn-icon">🔊</span>
@@ -72,8 +102,8 @@
       </div>
     </header>
 
-    <!-- WORKSTATION WRAPPER -->
-    <div class="workstation-frame">
+    <!-- WORKSTATION WRAPPER WITH 3D PERSPECTIVE TILT -->
+    <div class="workstation-frame" id="workstationFrame">
       <div class="workstation-stage" id="stage">
         
         <!-- BASE PIXEL ARTWORK -->
@@ -83,7 +113,7 @@
         <div class="ambient-glow" id="ambientGlow"></div>
         <div class="lamp-beam" id="lampBeam"></div>
 
-        <!-- LEFT MONITOR SCREEN (GRAFANA / GITHUB / REPOS / ACTIVITY) -->
+        <!-- LEFT MONITOR SCREEN (GRAFANA / GITHUB / KNOWN LANGUAGES / ACTIVITY) -->
         <div class="screen-portal monitor-left-portal" id="leftMonitorPortal">
           <div class="monitor-inner">
             <!-- Screen Header -->
@@ -95,25 +125,30 @@
               <div class="portal-tabs">
                 <button class="screen-tab active" data-tab="grafana">GRAFANA</button>
                 <button class="screen-tab" data-tab="github">GITHUB</button>
-                <button class="screen-tab" data-tab="languages">LANGUAGES</button>
+                <button class="screen-tab" data-tab="languages">CORE STACK</button>
                 <button class="screen-tab" data-tab="activity">ACTIVITY</button>
+              </div>
+              <div class="portal-time-range">
+                <button class="time-range-btn" data-range="1h">1H</button>
+                <button class="time-range-btn active" data-range="24h">24H</button>
+                <button class="time-range-btn" data-range="7d">7D</button>
               </div>
               <span class="portal-live-badge">● LIVE</span>
             </div>
 
-            <!-- Tab Content: GRAFANA (Matches reference artwork) -->
+            <!-- Tab Content: GRAFANA (Interactive DevOps Dashboard) -->
             <div class="tab-pane active" id="paneGrafana">
               <!-- Top Charts Row -->
               <div class="grafana-top-row">
-                <div class="chart-tile line-green">
+                <div class="chart-tile line-green" id="tileCpu">
                   <div class="tile-header">CPU LOAD <span class="val" id="cpuLoadText">42%</span></div>
                   <canvas id="canvasGreenWave" class="mini-canvas" width="130" height="42"></canvas>
                 </div>
-                <div class="chart-tile line-yellow">
+                <div class="chart-tile line-yellow" id="tileNet">
                   <div class="tile-header">NETWORK <span class="val" id="netIoText">1.4 MB/s</span></div>
                   <canvas id="canvasYellowWave" class="mini-canvas" width="130" height="42"></canvas>
                 </div>
-                <div class="chart-tile bars-cyan">
+                <div class="chart-tile bars-cyan" id="tileReqs">
                   <div class="tile-header">REQUESTS <span class="val" id="reqSecText">3.2k/m</span></div>
                   <canvas id="canvasCyanBars" class="mini-canvas" width="110" height="42"></canvas>
                 </div>
@@ -121,7 +156,7 @@
 
               <!-- Middle Radial Gauges Row -->
               <div class="grafana-gauges-row">
-                <div class="gauge-card green">
+                <div class="gauge-card green" id="gaugeCpuCard" title="Click to inspect CPU telemetry">
                   <div class="gauge-ring-wrap">
                     <svg viewBox="0 0 36 36" class="gauge-svg">
                       <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
@@ -134,7 +169,7 @@
                   </div>
                 </div>
 
-                <div class="gauge-card yellow">
+                <div class="gauge-card yellow" id="gaugeRamCard" title="Click to inspect RAM telemetry">
                   <div class="gauge-ring-wrap">
                     <svg viewBox="0 0 36 36" class="gauge-svg">
                       <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
@@ -147,7 +182,7 @@
                   </div>
                 </div>
 
-                <div class="gauge-card purple">
+                <div class="gauge-card purple" id="gaugeP95Card" title="Click to inspect P95 Latency">
                   <div class="gauge-ring-wrap">
                     <svg viewBox="0 0 36 36" class="gauge-svg">
                       <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
@@ -179,13 +214,13 @@
               <div class="github-stats-grid">
                 <div class="stat-box">
                   <small>PUBLIC REPOS</small>
-                  <strong id="statRepos">20</strong>
+                  <strong id="statRepos">21</strong>
                   <span>Active codebases</span>
                 </div>
                 <div class="stat-box">
                   <small>CONTRIBUTIONS</small>
-                  <strong id="statContribs">319</strong>
-                  <span>Past 12 months</span>
+                  <strong id="statContribs">322+</strong>
+                  <span>Live GitHub Count</span>
                 </div>
                 <div class="stat-box">
                   <small>STARS EARNED</small>
@@ -204,14 +239,14 @@
               </div>
             </div>
 
-            <!-- Tab Content: LANGUAGES -->
+            <!-- Tab Content: MOST KNOWN LANGUAGES -->
             <div class="tab-pane" id="paneLanguages">
+              <div class="lang-header-note"><b>MOST KNOWN & CORE LANGUAGES</b></div>
               <div class="languages-track-list" id="languageListContainer">
-                <div class="lang-row"><b>Python</b><div class="bar"><i style="width: 48%"></i></div><span>48%</span></div>
-                <div class="lang-row"><b>JavaScript</b><div class="bar"><i style="width: 25%"></i></div><span>25%</span></div>
-                <div class="lang-row"><b>TypeScript</b><div class="bar"><i style="width: 14%"></i></div><span>14%</span></div>
-                <div class="lang-row"><b>C / C++</b><div class="bar"><i style="width: 8%"></i></div><span>8%</span></div>
-                <div class="lang-row"><b>Swift / HTML</b><div class="bar"><i style="width: 5%"></i></div><span>5%</span></div>
+                <div class="lang-row"><b>Python</b><div class="bar"><i style="width: 52%"></i></div><span>52%</span></div>
+                <div class="lang-row"><b>Go</b><div class="bar"><i style="width: 24%"></i></div><span>24%</span></div>
+                <div class="lang-row"><b>JavaScript</b><div class="bar"><i style="width: 16%"></i></div><span>16%</span></div>
+                <div class="lang-row"><b>CSS / HTML</b><div class="bar"><i style="width: 8%"></i></div><span>8%</span></div>
               </div>
             </div>
 
@@ -220,17 +255,17 @@
               <div class="activity-feed-list" id="activityFeedContainer">
                 <div class="feed-item">
                   <span class="badge push">PUSH</span>
+                  <span class="repo">retail-store-devops</span>
+                  <span class="time">Recent</span>
+                </div>
+                <div class="feed-item">
+                  <span class="badge push">PUSH</span>
                   <span class="repo">cloudcost-pilot</span>
                   <span class="time">Recent</span>
                 </div>
                 <div class="feed-item">
                   <span class="badge push">PUSH</span>
                   <span class="repo">dataops-guardian</span>
-                  <span class="time">Recent</span>
-                </div>
-                <div class="feed-item">
-                  <span class="badge create">CREATE</span>
-                  <span class="repo">BlindAI</span>
                   <span class="time">Recent</span>
                 </div>
               </div>
@@ -262,7 +297,7 @@
               <button class="arch-node node-users" data-node="users" title="Inspect Users / Clients">
                 <span class="node-icon">👥</span>
                 <span class="node-name">Users</span>
-                <span class="node-status">3.2k</span>
+                <span class="node-status">3.4k</span>
               </button>
 
               <!-- Node: ALB -->
@@ -407,84 +442,84 @@
     <!-- LOWER SECTION: EXPANDED DEVOPS ECOSYSTEM & REPOSITORIES -->
     <div class="lower-dashboard">
 
-      <!-- TECH STACK SHOWCASE -->
+      <!-- CLOUD & DEVOPS ENGINEERING TOOLSET (BIGGER LOGOS & GENEROUS SPACING) -->
       <section class="dashboard-card tech-stack-card">
         <div class="card-head">
           <div class="card-title">
             <span class="pill-dot"></span>
-            <h3>🧰 CLOUD & DEVOPS ENGINEERING TOOLSET</h3>
+            <h3>🧰 CLOUD &amp; DEVOPS ENGINEERING TOOLSET</h3>
           </div>
-          <span class="sub-label">CORE INFRASTRUCTURE &bull; AUTOMATION &bull; MONITORING</span>
+          <span class="sub-label">CORE INFRASTRUCTURE &bull; AUTOMATION &bull; OBSERVABILITY</span>
         </div>
-        <div class="tech-grid">
+        <div class="tech-grid spacious-tech-grid">
           <div class="tech-tile"><img src="https://cdn.simpleicons.org/git/F05032" alt="Git"><b>Git</b><small>Version Control</small></div>
           <div class="tech-tile"><img src="https://cdn.simpleicons.org/github/ffffff" alt="GitHub"><b>GitHub</b><small>Collaboration</small></div>
-          <div class="tech-tile"><img src="https://cdn.simpleicons.org/docker/2496ED" alt="Docker"><b>Docker</b><small>Containers</small></div>
-          <div class="tech-tile"><img src="https://cdn.simpleicons.org/kubernetes/326CE5" alt="Kubernetes"><b>Kubernetes</b><small>Orchestration</small></div>
-          <div class="tech-tile"><img src="https://cdn.simpleicons.org/amazonaws/FF9900" alt="AWS"><b>AWS</b><small>Cloud Architecture</small></div>
-          <div class="tech-tile"><img src="https://cdn.simpleicons.org/terraform/844FBA" alt="Terraform"><b>Terraform</b><small>IaC Automation</small></div>
-          <div class="tech-tile"><img src="https://cdn.simpleicons.org/python/3776AB" alt="Python"><b>Python</b><small>Scripting & Tools</small></div>
-          <div class="tech-tile"><img src="https://cdn.simpleicons.org/linux/FCC624" alt="Linux"><b>Linux</b><small>Kernel & Systems</small></div>
-          <div class="tech-tile"><img src="https://cdn.simpleicons.org/grafana/F46800" alt="Grafana"><b>Grafana</b><small>Dashboards</small></div>
-          <div class="tech-tile"><img src="https://cdn.simpleicons.org/prometheus/E6522C" alt="Prometheus"><b>Prometheus</b><small>Metrics & Alerts</small></div>
-          <div class="tech-tile"><img src="https://cdn.simpleicons.org/githubactions/2088FF" alt="CI/CD"><b>GitHub Actions</b><small>CI/CD Pipelines</small></div>
-          <div class="tech-tile"><img src="https://cdn.simpleicons.org/nginx/009639" alt="NGINX"><b>NGINX</b><small>Reverse Proxy</small></div>
+          <div class="tech-tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="Docker"><b>Docker</b><small>Containers</small></div>
+          <div class="tech-tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg" alt="Kubernetes"><b>Kubernetes</b><small>Orchestration</small></div>
+          <!-- Proper AWS Logo -->
+          <div class="tech-tile"><img src="https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg" alt="AWS" class="aws-logo-img"><b>AWS</b><small>Cloud Architecture</small></div>
+          <div class="tech-tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/terraform/terraform-original.svg" alt="Terraform"><b>Terraform</b><small>IaC Automation</small></div>
+          <!-- Proper Linux Logo (Colorful Tux) -->
+          <div class="tech-tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg" alt="Linux"><b>Linux</b><small>Kernel &amp; Systems</small></div>
+          <div class="tech-tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python"><b>Python</b><small>Automation &amp; Scripting</small></div>
+          <div class="tech-tile"><img src="https://skillicons.dev/icons?i=go" alt="Go"><b>Go</b><small>Cloud Native Services</small></div>
+          <div class="tech-tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/grafana/grafana-original.svg" alt="Grafana"><b>Grafana</b><small>Telemetry Dashboards</small></div>
+          <div class="tech-tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prometheus/prometheus-original.svg" alt="Prometheus"><b>Prometheus</b><small>Metrics &amp; Alerts</small></div>
+          <!-- Real Elasticsearch Logo -->
+          <div class="tech-tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/elasticsearch/elasticsearch-original.svg" alt="Elasticsearch"><b>Elasticsearch</b><small>Log Analytics</small></div>
+          <!-- Real Kibana Logo -->
+          <div class="tech-tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kibana/kibana-original.svg" alt="Kibana"><b>Kibana</b><small>Visualization</small></div>
+          <!-- Real Pytest Logo -->
+          <div class="tech-tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytest/pytest-original.svg" alt="Pytest"><b>Pytest</b><small>Automated Testing</small></div>
+          <div class="tech-tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" alt="NGINX"><b>NGINX</b><small>Reverse Proxy</small></div>
+          <div class="tech-tile"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/githubactions/githubactions-original.svg" alt="GitHub Actions"><b>CI/CD</b><small>Pipelines</small></div>
         </div>
       </section>
 
-      <!-- TWO COLUMN: FEATURED REPOS & LIVE TERMINAL LOGS -->
+      <!-- TWO COLUMN: FEATURED REPOS (DEVOPS FOCUSED) & TELEMETRY CONSOLE -->
       <div class="dashboard-columns">
         
-        <!-- FEATURED REPOSITORIES -->
+        <!-- FEATURED DEVOPS REPOSITORIES (NO BlindAI, NO calc-lab-home) -->
         <section class="dashboard-card repos-card">
           <div class="card-head">
             <div class="card-title">
               <span class="pill-dot green"></span>
-              <h3>📂 FEATURED REPOSITORIES</h3>
+              <h3>📂 FEATURED DEVOPS REPOSITORIES</h3>
             </div>
-            <span class="sub-label">PUBLIC CODEBASES</span>
+            <span class="sub-label">CORE INFRASTRUCTURE CODEBASES</span>
           </div>
           <div class="repos-grid" id="reposGrid">
-            <!-- Populated via app.js -->
+            <!-- 1. Flagship DevOps Retail Store Project -->
+            <a href="https://github.com/ranjeetkumarguptabro-maker/retail-store-devops" target="_blank" rel="noopener" class="repo-card featured-highlight">
+              <div class="repo-card-head">
+                <span class="repo-name">retail-store-devops</span>
+                <span class="lang-tag aws">AWS · K8s · CI/CD</span>
+              </div>
+              <p class="repo-desc">End-to-End DevOps Project: AWS Retail Store Cloud Deployment with Docker, Terraform, Kubernetes EKS, GitHub Actions CI/CD, Prometheus &amp; Python Automation.</p>
+              <div class="repo-card-footer">
+                <span>⭐ 0</span>
+                <span>🔄 Production Ready</span>
+              </div>
+            </a>
+            <!-- 2. Cloud Cost Pilot -->
             <a href="https://github.com/ranjeetkumarguptabro-maker/cloudcost-pilot" target="_blank" rel="noopener" class="repo-card">
               <div class="repo-card-head">
                 <span class="repo-name">cloudcost-pilot</span>
-                <span class="lang-tag python">Python</span>
+                <span class="lang-tag python">Python · AWS API</span>
               </div>
-              <p class="repo-desc">Cloud cost monitoring & infrastructure budget autopilot for AWS cloud workloads.</p>
+              <p class="repo-desc">Cloud cost monitoring &amp; infrastructure budget autopilot for AWS cloud workloads and automated resource optimization.</p>
               <div class="repo-card-footer">
                 <span>⭐ 0</span>
                 <span>🔄 Active</span>
               </div>
             </a>
+            <!-- 3. DataOps Guardian -->
             <a href="https://github.com/ranjeetkumarguptabro-maker/dataops-guardian" target="_blank" rel="noopener" class="repo-card">
               <div class="repo-card-head">
                 <span class="repo-name">dataops-guardian</span>
-                <span class="lang-tag python">Python</span>
+                <span class="lang-tag python">Python · CI/CD</span>
               </div>
-              <p class="repo-desc">Python automation toolkit for health checks, preflight validation, and automated CI testing.</p>
-              <div class="repo-card-footer">
-                <span>⭐ 0</span>
-                <span>🔄 Active</span>
-              </div>
-            </a>
-            <a href="https://github.com/ranjeetkumarguptabro-maker/BlindAI" target="_blank" rel="noopener" class="repo-card">
-              <div class="repo-card-head">
-                <span class="repo-name">BlindAI</span>
-                <span class="lang-tag swift">Swift</span>
-              </div>
-              <p class="repo-desc">Assistive smart-navigation iOS application and AI perception engine for visually impaired pedestrians.</p>
-              <div class="repo-card-footer">
-                <span>⭐ 0</span>
-                <span>🔄 Active</span>
-              </div>
-            </a>
-            <a href="https://github.com/ranjeetkumarguptabro-maker/calc-lab-home" target="_blank" rel="noopener" class="repo-card">
-              <div class="repo-card-head">
-                <span class="repo-name">calc-lab-home</span>
-                <span class="lang-tag c">C</span>
-              </div>
-              <p class="repo-desc">Low-level arithmetic expression parser and evaluator developed for systems coursework.</p>
+              <p class="repo-desc">Python automation toolkit for health checks, preflight validation, infrastructure testing, and automated CI pipelines.</p>
               <div class="repo-card-footer">
                 <span>⭐ 0</span>
                 <span>🔄 Active</span>
@@ -503,7 +538,7 @@
             <span class="sub-label">REAL-TIME SYSTEM LOGS</span>
           </div>
           <div class="terminal-body" id="terminalLog">
-            <div class="term-line info">[INIT] Ranjeet's Contribution Workplace initializing...</div>
+            <div class="term-line info">[INIT] Ranjeet's Contribution Workplace v2.6 initialized.</div>
             <div class="term-line success">[OK] Base pixel artwork mounted (1696x858 RGBA).</div>
             <div class="term-line success">[OK] Web Audio 8-bit synthesizer ready.</div>
             <div class="term-line info">[SYNC] Querying GitHub Public API for ranjeetkumarguptabro-maker...</div>
@@ -511,6 +546,115 @@
         </section>
 
       </div>
+
+      <!-- 360° & 90° MULTI-AXIS ACTIVITY & STRESS BREAKDOWN GRAPH -->
+      <section class="dashboard-card activity-graph-card">
+        <div class="card-head">
+          <div class="card-title">
+            <span class="pill-dot cyan"></span>
+            <h3>📊 ACTIVITY &amp; STRESS BREAKDOWN (360° / 90° POLAR RADAR)</h3>
+          </div>
+          <span class="sub-label">COMMITS &bull; PULL REQUESTS &bull; FORKS &bull; STARS STRESS LOAD</span>
+        </div>
+        <div class="stress-radar-layout">
+          <!-- Canvas for 360/90 degree Radar -->
+          <div class="radar-canvas-wrap">
+            <canvas id="radarCanvas" width="340" height="340" class="radar-canvas"></canvas>
+          </div>
+          <!-- Metrics Breakdown Cards -->
+          <div class="stress-metrics-grid">
+            <div class="stress-metric-card north">
+              <div class="stress-card-head">
+                <span class="axis-angle">90° VERTICAL (NORTH)</span>
+                <span class="stress-badge high">HIGH STRESS · 94%</span>
+              </div>
+              <strong class="stress-number" id="stressCommitsNum">322+</strong>
+              <div class="stress-name">Commits &amp; Code Pushes</div>
+              <div class="stress-bar"><i style="width: 94%"></i></div>
+              <small>Consistent daily commits, infrastructure automation scripts, and workflow iterations.</small>
+            </div>
+
+            <div class="stress-metric-card east">
+              <div class="stress-card-head">
+                <span class="axis-angle">360° / 0° HORIZONTAL (EAST)</span>
+                <span class="stress-badge med">MED STRESS · 68%</span>
+              </div>
+              <strong class="stress-number">28</strong>
+              <div class="stress-name">Pull Requests &amp; CI Merges</div>
+              <div class="stress-bar"><i style="width: 68%"></i></div>
+              <small>Feature branches merged with passing GitHub Actions preflight validations.</small>
+            </div>
+
+            <div class="stress-metric-card south">
+              <div class="stress-card-head">
+                <span class="axis-angle">270° VERTICAL (SOUTH)</span>
+                <span class="stress-badge mod">MODERATE · 48%</span>
+              </div>
+              <strong class="stress-number">16</strong>
+              <div class="stress-name">Forks &amp; Upstream Contributions</div>
+              <div class="stress-bar"><i style="width: 48%"></i></div>
+              <small>Open-source tooling experiments and course lab repositories.</small>
+            </div>
+
+            <div class="stress-metric-card west">
+              <div class="stress-card-head">
+                <span class="axis-angle">180° HORIZONTAL (WEST)</span>
+                <span class="stress-badge glow">GROWING · 38%</span>
+              </div>
+              <strong class="stress-number">12</strong>
+              <div class="stress-name">Stars &amp; Community Engagement</div>
+              <div class="stress-bar"><i style="width: 38%"></i></div>
+              <small>Public repository reach across DevOps and systems engineering domains.</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CERTIFICATIONS & LEARNING SECTION (BEFORE CONTRIBUTION TOTAL) -->
+      <section class="dashboard-card cert-card">
+        <div class="card-head">
+          <div class="card-title">
+            <span class="pill-dot yellow"></span>
+            <h3>📜 CERTIFICATIONS &amp; LEARNING</h3>
+          </div>
+          <span class="sub-label">VERIFIED PROFESSIONAL CREDENTIALS</span>
+        </div>
+        <div class="cert-grid">
+          <!-- Cert 1: Introduction to Kubernetes -->
+          <div class="cert-item" id="certK8s">
+            <div class="cert-thumb-wrap">
+              <img src="assets/certificates/kubernetes-lfs158.jpeg" alt="Introduction to Kubernetes (LFS158)" class="cert-thumb">
+              <span class="cert-zoom-hint">🔍 CLICK TO VIEW</span>
+            </div>
+            <div class="cert-details">
+              <div class="cert-issuer">THE LINUX FOUNDATION</div>
+              <h4 class="cert-name">Introduction to Kubernetes (LFS158)</h4>
+              <p class="cert-desc">Container orchestration, pod management, service networking, and Kubernetes architecture fundamentals.</p>
+              <div class="cert-meta">
+                <span><b>ID:</b> LF-9zgw8gacep</span>
+                <span><b>Completed:</b> November 14, 2026</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cert 2: AWS Cloud Practitioner Essentials -->
+          <div class="cert-item" id="certAws">
+            <div class="cert-thumb-wrap">
+              <img src="assets/certificates/aws-cloud-practitioner.jpeg" alt="AWS Cloud Practitioner Essentials" class="cert-thumb">
+              <span class="cert-zoom-hint">🔍 CLICK TO VIEW</span>
+            </div>
+            <div class="cert-details">
+              <div class="cert-issuer">AMAZON WEB SERVICES (AWS)</div>
+              <h4 class="cert-name">AWS Cloud Practitioner Essentials</h4>
+              <p class="cert-desc">Core AWS services (EC2, VPC, S3, RDS, IAM), cloud security, pricing models, and high-availability architecture.</p>
+              <div class="cert-meta">
+                <span><b>Issuer:</b> AWS Training &amp; Certification</span>
+                <span><b>Completed:</b> November 14, 2026</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
     </div>
 
@@ -529,6 +673,22 @@
 
   </div>
 
+  <!-- CERTIFICATE LIGHTBOX MODAL -->
+  <div class="modal-backdrop" id="certModal">
+    <div class="modal-dialog cert-modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span>📜</span>
+          <h3 id="certModalTitle">Certificate Inspection</h3>
+        </div>
+        <button id="certModalCloseBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body cert-modal-body">
+        <img id="certModalImg" src="" alt="Certificate" class="cert-lightbox-img">
+      </div>
+    </div>
+  </div>
+
   <!-- EMBED / README MODAL -->
   <div class="modal-backdrop" id="readmeModal">
     <div class="modal-dialog">
@@ -541,7 +701,7 @@
       </div>
       <div class="modal-body">
         <p class="modal-intro">
-          Copy this Markdown code directly into your GitHub Profile repository (<code class="highlight-code">ranjeetkumarguptabro-maker/ranjeetkumarguptabro-maker</code>) <code class="highlight-code">README.md</code>. It embeds your animated workplace graphic and links to this live interactive dashboard!
+          Copy this Markdown code directly into your GitHub Profile repository (<code class="highlight-code">ranjeetkumarguptabro-maker/ranjeetkumarguptabro-maker</code>) <code class="highlight-code">README.md</code>.
         </p>
 
         <div class="code-box-header">

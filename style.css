@@ -1,6 +1,6 @@
 /* ==========================================================================
    RANJEET'S CONTRIBUTION WORKPLACE · RETRO CYBERNETIC DEVELOPER DASHBOARD
-   Pixel-art workstation with real-time GitHub telemetry & AWS architecture
+   Pixel-art workstation with real-time GitHub telemetry, AWS blueprint & 3D tilt
    ========================================================================== */
 
 :root {
@@ -62,6 +62,130 @@ html, body {
   margin: 0 auto;
   padding: 16px 20px 48px;
   z-index: 1;
+}
+
+/* ==========================================================================
+   FIRST VISIT CYBER BOOT SEQUENCE OVERLAY
+   ========================================================================== */
+
+.boot-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 16, 0.94);
+  backdrop-filter: blur(12px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.boot-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.boot-terminal {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  background: #060d1c;
+  border: 1px solid var(--cyan);
+  border-radius: 10px;
+  box-shadow: 0 0 40px rgba(56, 225, 255, 0.35), inset 0 0 30px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  font-family: var(--font-code);
+  font-size: 11px;
+}
+
+.boot-scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(56, 225, 255, 0.45);
+  box-shadow: 0 0 15px var(--cyan);
+  animation: scanline 2.2s linear infinite;
+  pointer-events: none;
+}
+
+.boot-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #09152b;
+  padding: 10px 14px;
+  border-bottom: 1px solid #1a3258;
+}
+
+.boot-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.b-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.b-dot.red { background: #ff4757; }
+.b-dot.yellow { background: #ffa502; }
+.b-dot.green { background: #2ed573; }
+
+.boot-title {
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.boot-logs {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 170px;
+}
+
+.b-line {
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.b-line.green { color: var(--neon-green); font-weight: 700; }
+.b-line.cyan { color: var(--cyan); }
+.b-line.yellow { color: var(--neon-yellow); }
+
+.boot-action {
+  padding: 12px 18px;
+  background: #081224;
+  border-top: 1px solid #162a4a;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.boot-skip-btn {
+  background: linear-gradient(90deg, #1263a3, #158da3);
+  border: 1px solid var(--cyan);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(56, 225, 255, 0.35);
+  transition: all 0.2s;
+}
+
+.boot-skip-btn:hover {
+  background: var(--cyan);
+  color: #000;
+  transform: translateY(-1px);
 }
 
 /* ==========================================================================
@@ -203,7 +327,7 @@ html, body {
 }
 
 /* ==========================================================================
-   WORKSTATION FRAME & STAGE (Aspect Ratio: 1696 / 858)
+   WORKSTATION FRAME & STAGE (3D PERSPECTIVE TILT)
    ========================================================================== */
 
 .workstation-frame {
@@ -218,6 +342,7 @@ html, body {
     0 16px 60px rgba(0, 0, 0, 0.85),
     inset 0 0 100px rgba(7, 30, 68, 0.4);
   margin-bottom: 24px;
+  perspective: 1400px;
 }
 
 .workstation-stage {
@@ -226,6 +351,8 @@ html, body {
   aspect-ratio: 1696 / 858;
   overflow: hidden;
   user-select: none;
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out;
 }
 
 .workstation-base {
@@ -321,7 +448,7 @@ html, body {
 
 .portal-tabs {
   display: flex;
-  gap: 4px;
+  gap: 3px;
 }
 
 .screen-tab {
@@ -330,8 +457,8 @@ html, body {
   border-radius: 3px;
   color: var(--text-muted);
   font-family: var(--font-mono);
-  font-size: 8px;
-  padding: 3px 6px;
+  font-size: 7.5px;
+  padding: 2.5px 5px;
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -339,6 +466,28 @@ html, body {
 .screen-tab:hover, .screen-tab.active {
   background: #18335f;
   border-color: var(--cyan);
+  color: #fff;
+}
+
+.portal-time-range {
+  display: flex;
+  gap: 2px;
+}
+
+.time-range-btn {
+  background: #0a1324;
+  border: 1px solid #1e355c;
+  color: var(--text-dim);
+  font-size: 6.5px;
+  font-family: var(--font-code);
+  padding: 2px 4px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.time-range-btn:hover, .time-range-btn.active {
+  background: #1b3d6e;
+  border-color: var(--neon-yellow);
   color: #fff;
 }
 
@@ -362,7 +511,7 @@ html, body {
   display: flex;
 }
 
-/* Grafana View matching reference image */
+/* Grafana View */
 .grafana-top-row {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -375,6 +524,12 @@ html, body {
   border: 1px solid #1d3154;
   border-radius: 4px;
   padding: 4px 6px;
+  cursor: crosshair;
+  transition: border-color 0.2s;
+}
+
+.chart-tile:hover {
+  border-color: var(--cyan);
 }
 
 .tile-header {
@@ -413,6 +568,13 @@ html, body {
   border: 1px solid #1d3154;
   border-radius: 4px;
   padding: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.gauge-card:hover {
+  border-color: var(--neon-yellow);
+  transform: scale(1.04);
 }
 
 .gauge-ring-wrap {
@@ -532,17 +694,24 @@ html, body {
   color: var(--text-muted);
 }
 
-/* Languages Tab */
+/* Most Known Languages Tab */
+.lang-header-note {
+  font-size: 8px;
+  color: var(--neon-yellow);
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
 .languages-track-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 6px 4px;
+  gap: 7px;
+  padding: 4px 2px;
 }
 
 .lang-row {
   display: grid;
-  grid-template-columns: 80px 1fr 35px;
+  grid-template-columns: 85px 1fr 35px;
   align-items: center;
   gap: 8px;
   font-size: 8.5px;
@@ -699,7 +868,7 @@ html, body {
 .arch-node .node-name { font-size: 8px; font-weight: 700; margin-top: 2px; }
 .arch-node .node-status { font-size: 6.5px; color: var(--cyan); }
 
-/* Node Coordinates relative to cloud map */
+/* Node Coordinates */
 .node-users { left: 4%; top: 32%; width: 13%; }
 .node-alb { left: 24%; top: 32%; width: 14%; border-color: rgba(255, 144, 40, 0.6); }
 .node-eks { left: 47%; top: 25%; width: 17%; border-color: rgba(255, 144, 40, 0.8); }
@@ -777,7 +946,6 @@ html, body {
 
 /* ==========================================================================
    PC TOWER RIG (BOTTOM RIGHT UNDER DESK)
-   Percentage Bounds: Left: 73.23%, Top: 68.18%, Width: 13.21%, Height: 18.65%
    ========================================================================== */
 
 .pc-tower-hotspot {
@@ -857,10 +1025,7 @@ html, body {
   letter-spacing: 0.5px;
 }
 
-/* ==========================================================================
-   TUX COFFEE MUG & DESK LAMP HOTSPOTS
-   ========================================================================== */
-
+/* Hotspots */
 .tux-mug-hotspot {
   position: absolute;
   left: 73.00%;
@@ -960,7 +1125,6 @@ html, body {
 
 /* ==========================================================================
    BOTTOM CONTRIBUTION WORKPLACE HEATMAP
-   Percentage Bounds: Top: 88.00%, Height: 12.00%, Left: 0, Width: 100%
    ========================================================================== */
 
 .contribution-heatmap-bar {
@@ -1012,7 +1176,6 @@ html, body {
   outline: 1px solid #fff;
 }
 
-/* Palette matching reference image */
 .heat-cell.l0 { background: #0b1529; }
 .heat-cell.l1 { background: var(--neon-yellow); box-shadow: 0 0 4px rgba(255, 227, 79, 0.6); }
 .heat-cell.l2 { background: var(--neon-orange); box-shadow: 0 0 4px rgba(255, 144, 40, 0.7); }
@@ -1077,20 +1240,20 @@ html, body {
 }
 
 /* ==========================================================================
-   LOWER DASHBOARD: TECH STACK & REPOSITORIES
+   LOWER DASHBOARD: SPACIOUS TECH TOOLSET (BIGGER LOGOS)
    ========================================================================== */
 
 .lower-dashboard {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 .dashboard-card {
   background: var(--bg-card);
   border: 1px solid var(--panel-border);
   border-radius: 10px;
-  padding: 20px;
+  padding: 22px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
@@ -1126,6 +1289,8 @@ html, body {
 
 .pill-dot.green { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
 .pill-dot.amber { background: var(--neon-yellow); box-shadow: 0 0 8px var(--neon-yellow); }
+.pill-dot.cyan { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+.pill-dot.yellow { background: var(--neon-yellow); box-shadow: 0 0 8px var(--neon-yellow); }
 
 .sub-label {
   font-size: 10px;
@@ -1133,11 +1298,12 @@ html, body {
   letter-spacing: 0.5px;
 }
 
-/* Tech Grid */
-.tech-grid {
+/* Spacious Tech Grid with Bigger Logos */
+.spacious-tech-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 16px;
+  padding: 8px 0;
 }
 
 .tech-tile {
@@ -1145,62 +1311,80 @@ html, body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 8px;
-  padding: 14px 10px;
-  background: rgba(14, 30, 58, 0.6);
-  border: 1px solid rgba(36, 68, 115, 0.4);
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  gap: 10px;
+  padding: 18px 12px;
+  background: rgba(14, 30, 58, 0.65);
+  border: 1px solid rgba(36, 68, 115, 0.45);
+  border-radius: 10px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .tech-tile:hover {
-  background: rgba(22, 48, 92, 0.85);
+  background: rgba(22, 48, 92, 0.9);
   border-color: var(--cyan);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 12px rgba(56, 225, 255, 0.2);
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45), 0 0 15px rgba(56, 225, 255, 0.25);
 }
 
 .tech-tile img {
-  width: 32px;
-  height: 32px;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+  transition: transform 0.2s;
+}
+
+.tech-tile:hover img {
+  transform: scale(1.1);
+}
+
+.aws-logo-img {
+  width: 52px !important;
+  height: 38px !important;
 }
 
 .tech-tile b {
-  font-size: 11px;
+  font-size: 12px;
   color: #fff;
+  letter-spacing: 0.5px;
 }
 
 .tech-tile small {
-  font-size: 8.5px;
+  font-size: 9px;
   color: var(--text-muted);
 }
 
 /* Dashboard Columns */
 .dashboard-columns {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: 1.3fr 1fr;
   gap: 20px;
 }
 
 /* Repos Grid */
 .repos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 14px;
 }
 
 .repo-card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 14px;
+  gap: 8px;
+  padding: 16px;
   background: rgba(14, 30, 58, 0.65);
   border: 1px solid rgba(36, 68, 115, 0.5);
   border-radius: 8px;
   text-decoration: none;
   color: var(--text-main);
   transition: all 0.2s ease;
+}
+
+.repo-card.featured-highlight {
+  border-color: rgba(56, 225, 255, 0.7);
+  background: linear-gradient(135deg, rgba(14, 38, 77, 0.8), rgba(9, 22, 48, 0.85));
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(56, 225, 255, 0.1);
 }
 
 .repo-card:hover {
@@ -1214,32 +1398,28 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
 }
 
 .repo-name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--cyan);
 }
 
 .lang-tag {
   font-size: 8px;
-  padding: 2px 6px;
+  padding: 3px 7px;
   border-radius: 3px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
+.lang-tag.aws { background: #ff9900; color: #000; }
 .lang-tag.python { background: #2b5b84; color: #ffde57; }
-.lang-tag.swift { background: #f05138; color: #fff; }
-.lang-tag.c { background: #3949ab; color: #fff; }
 
 .repo-desc {
-  font-size: 10px;
+  font-size: 10.5px;
   color: var(--text-muted);
-  line-height: 1.4;
-  margin-bottom: 12px;
-  flex: 1;
+  line-height: 1.5;
 }
 
 .repo-card-footer {
@@ -1259,7 +1439,7 @@ html, body {
   border: 1px solid #142848;
   border-radius: 6px;
   padding: 14px;
-  height: 230px;
+  height: 290px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -1274,6 +1454,237 @@ html, body {
 .term-line.success { color: var(--neon-green); }
 .term-line.warn { color: var(--neon-yellow); }
 .term-line.error { color: var(--neon-red); }
+
+/* ==========================================================================
+   360° / 90° POLAR RADAR GRAPH & STRESS BREAKDOWN
+   ========================================================================== */
+
+.stress-radar-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  align-items: center;
+  gap: 24px;
+}
+
+.radar-canvas-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(6, 14, 28, 0.7);
+  border: 1px solid rgba(56, 225, 255, 0.3);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.radar-canvas {
+  width: 320px;
+  height: 320px;
+  display: block;
+}
+
+.stress-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.stress-metric-card {
+  background: rgba(14, 30, 58, 0.7);
+  border: 1px solid #1d355e;
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.stress-metric-card:hover {
+  border-color: var(--cyan);
+  transform: translateY(-2px);
+}
+
+.stress-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.axis-angle {
+  font-size: 8px;
+  color: var(--cyan);
+  font-family: var(--font-code);
+  font-weight: 700;
+}
+
+.stress-badge {
+  font-size: 7.5px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.stress-badge.high { background: rgba(255, 42, 85, 0.2); color: var(--neon-red); border: 1px solid var(--neon-red); }
+.stress-badge.med { background: rgba(255, 144, 40, 0.2); color: var(--neon-orange); border: 1px solid var(--neon-orange); }
+.stress-badge.mod { background: rgba(56, 225, 255, 0.2); color: var(--cyan); border: 1px solid var(--cyan); }
+.stress-badge.glow { background: rgba(186, 84, 255, 0.2); color: var(--neon-purple); border: 1px solid var(--neon-purple); }
+
+.stress-number {
+  font-size: 22px;
+  color: #fff;
+  font-family: var(--font-code);
+}
+
+.stress-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.stress-bar {
+  height: 5px;
+  background: #142442;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.stress-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--neon-purple));
+}
+
+.stress-metric-card.north .stress-bar i { background: linear-gradient(90deg, var(--neon-yellow), var(--neon-red)); }
+
+.stress-metric-card small {
+  font-size: 8.5px;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+/* ==========================================================================
+   CERTIFICATIONS & LEARNING SECTION
+   ========================================================================== */
+
+.cert-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 18px;
+}
+
+.cert-item {
+  display: flex;
+  gap: 16px;
+  background: rgba(14, 30, 58, 0.7);
+  border: 1px solid rgba(48, 88, 148, 0.5);
+  border-radius: 10px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.cert-item:hover {
+  background: rgba(20, 46, 88, 0.9);
+  border-color: var(--neon-yellow);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 227, 79, 0.2);
+  transform: translateY(-2px);
+}
+
+.cert-thumb-wrap {
+  position: relative;
+  width: 140px;
+  height: 95px;
+  flex-shrink: 0;
+  border: 1px solid rgba(56, 225, 255, 0.4);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #060d1c;
+}
+
+.cert-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s;
+}
+
+.cert-item:hover .cert-thumb {
+  transform: scale(1.06);
+}
+
+.cert-zoom-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.cert-item:hover .cert-zoom-hint {
+  opacity: 1;
+}
+
+.cert-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cert-issuer {
+  font-size: 8.5px;
+  color: var(--neon-yellow);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.cert-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.cert-desc {
+  font-size: 9.5px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.cert-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 8.5px;
+  color: var(--cyan);
+}
+
+.cert-meta span b {
+  color: var(--text-muted);
+}
+
+/* Lightbox Modal */
+.cert-modal-dialog {
+  max-width: 900px;
+}
+
+.cert-modal-body {
+  padding: 0;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cert-lightbox-img {
+  width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+}
 
 /* Footer */
 .hud-footer {
@@ -1453,6 +1864,12 @@ html, body {
    ANIMATIONS & KEYFRAMES
    ========================================================================== */
 
+@keyframes scanline {
+  0% { transform: translateY(0); opacity: 0.8; }
+  50% { opacity: 0.4; }
+  100% { transform: translateY(220px); opacity: 0.8; }
+}
+
 @keyframes pulse-glow {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.4; transform: scale(0.8); }
@@ -1504,6 +1921,13 @@ body.theme-cyberpunk .workstation-base { filter: hue-rotate(25deg) contrast(1.1)
   .dashboard-columns {
     grid-template-columns: 1fr;
   }
+  .stress-radar-layout {
+    grid-template-columns: 1fr;
+  }
+  .radar-canvas-wrap {
+    max-width: 320px;
+    margin: 0 auto;
+  }
   .hud-topbar {
     flex-direction: column;
     align-items: flex-start;
@@ -1529,5 +1953,11 @@ body.theme-cyberpunk .workstation-base { filter: hue-rotate(25deg) contrast(1.1)
   }
   .portal-brand .portal-title {
     display: none;
+  }
+  .cert-grid {
+    grid-template-columns: 1fr;
+  }
+  .stress-metrics-grid {
+    grid-template-columns: 1fr;
   }
 }
