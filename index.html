@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071126">
+  <title>Ranjeet's Contribution Workplace · Interactive Developer Dashboard</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Preconnect APIs -->
+  <link rel="preconnect" href="https://api.github.com">
+  <link rel="preconnect" href="https://github-contributions-api.jogruber.de">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-default">
+
+  <!-- BACKGROUND GRID ACCENT -->
+  <div class="cyber-grid-bg"></div>
+
+  <div class="shell">
+    
+    <!-- TOP CYBER HUD BAR -->
+    <header class="hud-topbar">
+      <div class="hud-brand">
+        <span class="hud-logo">⌘</span>
+        <div class="hud-brand-text">
+          <div class="brand-name">RANJEET KUMAR GUPTA</div>
+          <div class="brand-sub">DEV &bull; DEVOPS &bull; CLOUD INFRASTRUCTURE &bull; RIGA TECH</div>
+        </div>
+      </div>
+
+      <div class="hud-telemetry">
+        <div class="telemetry-pill">
+          <span class="live-pulse" id="statusPulse"></span>
+          <span id="apiStatusText">CONNECTING TO GITHUB</span>
+        </div>
+        <div class="telemetry-pill commit-pill">
+          <span class="icon">⚡</span>
+          <span id="headerContribCount">319 COMMITS (2025-2026)</span>
+        </div>
+        <div class="telemetry-pill clock-pill">
+          <span class="icon">🕒</span>
+          <span id="hudClock">--:--:--</span>
+        </div>
+      </div>
+
+      <div class="hud-controls">
+        <button id="themeToggleBtn" class="hud-btn" title="Toggle Lighting Mode">
+          <span class="btn-icon">💡</span>
+          <span class="btn-label" id="themeLabel">LIGHTING</span>
+        </button>
+        <button id="sfxToggleBtn" class="hud-btn" title="Toggle 8-bit Audio SFX">
+          <span class="btn-icon">🔊</span>
+          <span class="btn-label" id="sfxLabel">SFX ON</span>
+        </button>
+        <button id="syncBtn" class="hud-btn primary" title="Sync live GitHub telemetry">
+          <span class="btn-icon">↻</span>
+          <span class="btn-label">SYNC</span>
+        </button>
+        <button id="readmeModalBtn" class="hud-btn highlight" title="Get Profile README Embed Code">
+          <span class="btn-icon">📋</span>
+          <span class="btn-label">EMBED</span>
+        </button>
+        <a href="https://github.com/ranjeetkumarguptabro-maker" target="_blank" rel="noopener" class="hud-btn github-link">
+          <img src="https://cdn.simpleicons.org/github/ffffff" alt="GitHub" width="14" height="14">
+          <span class="btn-label">PROFILE</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- WORKSTATION WRAPPER -->
+    <div class="workstation-frame">
+      <div class="workstation-stage" id="stage">
+        
+        <!-- BASE PIXEL ARTWORK -->
+        <img src="assets/workplace-contribution.png" alt="Ranjeet's Contribution Workplace" class="workstation-base" id="baseArt">
+
+        <!-- AMBIENT LIGHTING OVERLAY -->
+        <div class="ambient-glow" id="ambientGlow"></div>
+        <div class="lamp-beam" id="lampBeam"></div>
+
+        <!-- LEFT MONITOR SCREEN (GRAFANA / GITHUB / REPOS / ACTIVITY) -->
+        <div class="screen-portal monitor-left-portal" id="leftMonitorPortal">
+          <div class="monitor-inner">
+            <!-- Screen Header -->
+            <div class="portal-header">
+              <div class="portal-brand">
+                <span class="grafana-flame">◉</span>
+                <span class="portal-title" id="leftMonitorTitle">Grafana</span>
+              </div>
+              <div class="portal-tabs">
+                <button class="screen-tab active" data-tab="grafana">GRAFANA</button>
+                <button class="screen-tab" data-tab="github">GITHUB</button>
+                <button class="screen-tab" data-tab="languages">LANGUAGES</button>
+                <button class="screen-tab" data-tab="activity">ACTIVITY</button>
+              </div>
+              <span class="portal-live-badge">● LIVE</span>
+            </div>
+
+            <!-- Tab Content: GRAFANA (Matches reference artwork) -->
+            <div class="tab-pane active" id="paneGrafana">
+              <!-- Top Charts Row -->
+              <div class="grafana-top-row">
+                <div class="chart-tile line-green">
+                  <div class="tile-header">CPU LOAD <span class="val" id="cpuLoadText">42%</span></div>
+                  <canvas id="canvasGreenWave" class="mini-canvas" width="130" height="42"></canvas>
+                </div>
+                <div class="chart-tile line-yellow">
+                  <div class="tile-header">NETWORK <span class="val" id="netIoText">1.4 MB/s</span></div>
+                  <canvas id="canvasYellowWave" class="mini-canvas" width="130" height="42"></canvas>
+                </div>
+                <div class="chart-tile bars-cyan">
+                  <div class="tile-header">REQUESTS <span class="val" id="reqSecText">3.2k/m</span></div>
+                  <canvas id="canvasCyanBars" class="mini-canvas" width="110" height="42"></canvas>
+                </div>
+              </div>
+
+              <!-- Middle Radial Gauges Row -->
+              <div class="grafana-gauges-row">
+                <div class="gauge-card green">
+                  <div class="gauge-ring-wrap">
+                    <svg viewBox="0 0 36 36" class="gauge-svg">
+                      <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <path class="gauge-fill gauge-fill-green" stroke-dasharray="42, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    </svg>
+                    <div class="gauge-center">
+                      <span class="gauge-label">CPU</span>
+                      <strong class="gauge-value" id="gaugeCpuVal">42%</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="gauge-card yellow">
+                  <div class="gauge-ring-wrap">
+                    <svg viewBox="0 0 36 36" class="gauge-svg">
+                      <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <path class="gauge-fill gauge-fill-yellow" stroke-dasharray="68, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    </svg>
+                    <div class="gauge-center">
+                      <span class="gauge-label">RAM</span>
+                      <strong class="gauge-value" id="gaugeRamVal">68%</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="gauge-card purple">
+                  <div class="gauge-ring-wrap">
+                    <svg viewBox="0 0 36 36" class="gauge-svg">
+                      <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                      <path class="gauge-fill gauge-fill-purple" stroke-dasharray="72, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    </svg>
+                    <div class="gauge-center">
+                      <span class="gauge-label">P95</span>
+                      <strong class="gauge-value" id="gaugeP95Val">132ms</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom Charts Row -->
+              <div class="grafana-bottom-row">
+                <div class="chart-tile stacked-chart">
+                  <div class="tile-header">HTTP STATUS CODES <span>2xx / 4xx</span></div>
+                  <canvas id="canvasStackedBars" class="mini-canvas" width="190" height="42"></canvas>
+                </div>
+                <div class="chart-tile purple-bars">
+                  <div class="tile-header">POD REPLICAS <span>12 HEALTHY</span></div>
+                  <canvas id="canvasPurpleBars" class="mini-canvas" width="120" height="42"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab Content: GITHUB PROFILE -->
+            <div class="tab-pane" id="paneGithub">
+              <div class="github-stats-grid">
+                <div class="stat-box">
+                  <small>PUBLIC REPOS</small>
+                  <strong id="statRepos">20</strong>
+                  <span>Active codebases</span>
+                </div>
+                <div class="stat-box">
+                  <small>CONTRIBUTIONS</small>
+                  <strong id="statContribs">319</strong>
+                  <span>Past 12 months</span>
+                </div>
+                <div class="stat-box">
+                  <small>STARS EARNED</small>
+                  <strong id="statStars">0</strong>
+                  <span>Across repos</span>
+                </div>
+              </div>
+              <div class="github-bio-card">
+                <div class="bio-name" id="bioName">Ranjeet Kumar Gupta</div>
+                <div class="bio-role">DevOps Engineer &bull; Computer Systems Student</div>
+                <div class="bio-meta">
+                  <span>🏛️ Riga Technical University</span>
+                  <span>📍 Riga, Latvia</span>
+                  <span>🏢 codexa code</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab Content: LANGUAGES -->
+            <div class="tab-pane" id="paneLanguages">
+              <div class="languages-track-list" id="languageListContainer">
+                <div class="lang-row"><b>Python</b><div class="bar"><i style="width: 48%"></i></div><span>48%</span></div>
+                <div class="lang-row"><b>JavaScript</b><div class="bar"><i style="width: 25%"></i></div><span>25%</span></div>
+                <div class="lang-row"><b>TypeScript</b><div class="bar"><i style="width: 14%"></i></div><span>14%</span></div>
+                <div class="lang-row"><b>C / C++</b><div class="bar"><i style="width: 8%"></i></div><span>8%</span></div>
+                <div class="lang-row"><b>Swift / HTML</b><div class="bar"><i style="width: 5%"></i></div><span>5%</span></div>
+              </div>
+            </div>
+
+            <!-- Tab Content: ACTIVITY -->
+            <div class="tab-pane" id="paneActivity">
+              <div class="activity-feed-list" id="activityFeedContainer">
+                <div class="feed-item">
+                  <span class="badge push">PUSH</span>
+                  <span class="repo">cloudcost-pilot</span>
+                  <span class="time">Recent</span>
+                </div>
+                <div class="feed-item">
+                  <span class="badge push">PUSH</span>
+                  <span class="repo">dataops-guardian</span>
+                  <span class="time">Recent</span>
+                </div>
+                <div class="feed-item">
+                  <span class="badge create">CREATE</span>
+                  <span class="repo">BlindAI</span>
+                  <span class="time">Recent</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- RIGHT MONITOR SCREEN (AWS INFRASTRUCTURE BLUEPRINT) -->
+        <div class="screen-portal monitor-right-portal" id="rightMonitorPortal">
+          <div class="monitor-inner right-inner">
+            <!-- Screen Header -->
+            <div class="portal-header">
+              <div class="portal-brand">
+                <span class="aws-logo-text">aws</span>
+                <span class="divider">|</span>
+                <span class="portal-title">Infrastructure Blueprint</span>
+              </div>
+              <span class="vpc-tag">VPC 10.0.0.0/16</span>
+            </div>
+
+            <!-- Interactive Architecture Map Container -->
+            <div class="cloud-map-container" id="cloudMap">
+              
+              <!-- Particle Flow Canvas for packet animations -->
+              <canvas id="packetCanvas" class="packet-canvas"></canvas>
+
+              <!-- Node: Users -->
+              <button class="arch-node node-users" data-node="users" title="Inspect Users / Clients">
+                <span class="node-icon">👥</span>
+                <span class="node-name">Users</span>
+                <span class="node-status">3.2k</span>
+              </button>
+
+              <!-- Node: ALB -->
+              <button class="arch-node node-alb" data-node="alb" title="Inspect AWS Application Load Balancer">
+                <span class="node-icon">⚖️</span>
+                <span class="node-name">ALB</span>
+                <span class="node-status">100%</span>
+              </button>
+
+              <!-- Node: EKS Cluster -->
+              <button class="arch-node node-eks" data-node="eks" title="Inspect AWS Elastic Kubernetes Service">
+                <div class="pods-badge">⎈ ⎈ ⎈</div>
+                <span class="node-icon">☸️</span>
+                <span class="node-name">EKS</span>
+                <span class="node-status">12 Pods</span>
+              </button>
+
+              <!-- Node: RDS Database -->
+              <button class="arch-node node-rds" data-node="rds" title="Inspect Amazon RDS PostgreSQL Database">
+                <span class="node-icon">🗄️</span>
+                <span class="node-name">RDS</span>
+                <span class="node-status">Multi-AZ</span>
+              </button>
+
+              <!-- Node: S3 -->
+              <button class="arch-node node-s3" data-node="s3" title="Inspect Amazon S3 Storage Bucket">
+                <span class="node-icon">🪣</span>
+                <span class="node-name">S3</span>
+                <span class="node-status">Assets</span>
+              </button>
+
+              <!-- Node: CloudFront -->
+              <button class="arch-node node-cloudfront" data-node="cloudfront" title="Inspect AWS CloudFront CDN">
+                <span class="node-icon">🌐</span>
+                <span class="node-name">CloudFront</span>
+                <span class="node-status">Edge CDN</span>
+              </button>
+
+              <!-- Node: CloudWatch -->
+              <button class="arch-node node-cloudwatch" data-node="cloudwatch" title="Inspect AWS CloudWatch Observability">
+                <span class="node-icon">📊</span>
+                <span class="node-name">CloudWatch</span>
+                <span class="node-status">0 Alarms</span>
+              </button>
+
+              <!-- HUD Inspection Drawer -->
+              <div class="node-drawer" id="nodeDrawer">
+                <div class="drawer-header">
+                  <span id="drawerTitle" class="drawer-title">EKS · Elastic Kubernetes Service</span>
+                  <button id="drawerCloseBtn" class="drawer-close">&times;</button>
+                </div>
+                <div class="drawer-body" id="drawerBody">
+                  Kubernetes cluster orchestrating containerized microservices across multi-AZ worker nodes with horizontal pod autoscaling.
+                </div>
+                <div class="drawer-meta" id="drawerMeta">
+                  <span>METRICS: 12 Pods Healthy &bull; Uptime: 99.99% &bull; CPU: 38%</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- PC TOWER RIG (BOTTOM RIGHT UNDER DESK) -->
+        <div class="pc-tower-hotspot" id="pcRig" title="Click to boost PC cooling fans!">
+          <div class="pc-display">
+            <span class="pc-cpu-text" id="pcCpuReadout">CPU 38%</span>
+            <canvas id="pcEcgCanvas" class="pc-ecg" width="65" height="15"></canvas>
+          </div>
+          <div class="pc-fans-container" id="pcFansWrap">
+            <div class="pc-fan fan-top" id="pcFan1"></div>
+            <div class="pc-fan fan-bottom" id="pcFan2"></div>
+          </div>
+          <div class="fan-mode-tag" id="fanModeTag">NORMAL</div>
+        </div>
+
+        <!-- TUX COFFEE MUG HOTSPOT -->
+        <div class="tux-mug-hotspot" id="tuxMug" title="Click to take a sip of developer coffee!">
+          <div class="steam-container" id="steamFx">
+            <span class="steam-puff s1"></span>
+            <span class="steam-puff s2"></span>
+            <span class="steam-puff s3"></span>
+          </div>
+        </div>
+
+        <!-- DESK LAMP HOTSPOT -->
+        <div class="desk-lamp-hotspot" id="deskLamp" title="Click to toggle desk lamp lighting!"></div>
+
+        <!-- TUX WALL PORTRAIT & FIGURINE HOTSPOTS -->
+        <div class="tux-portrait-hotspot" id="tuxPortrait" title="Linux Tux: 'Talk is cheap. Show me the code.'"></div>
+        <div class="tux-figurine-hotspot" id="tuxFigurine" title="Linux Mascot: 'In a world without fences, who needs Gates?'"></div>
+
+        <!-- AWS SHELF SIGN HOTSPOT -->
+        <div class="aws-shelf-hotspot" id="awsShelf" title="AWS Cloud Infrastructure"></div>
+
+        <!-- UNDER-DESK NEON PIPES ANIMATION -->
+        <div class="neon-conduits-overlay">
+          <div class="neon-pulse pulse-cyan"></div>
+          <div class="neon-pulse pulse-magenta"></div>
+          <div class="neon-pulse pulse-yellow"></div>
+        </div>
+
+        <!-- BOTTOM CONTRIBUTION WORKPLACE HEATMAP -->
+        <div class="contribution-heatmap-bar" id="heatmapBar">
+          
+          <!-- Month labels -->
+          <div class="heatmap-months-row">
+            <span>May</span>
+            <span>Jun</span>
+            <span>Jul</span>
+            <span>Aug</span>
+            <span>Sep</span>
+            <span>Oct</span>
+            <span>Nov</span>
+          </div>
+
+          <!-- Heatmap grid container -->
+          <div class="heatmap-grid" id="heatmapGrid">
+            <!-- Populated dynamically via JS with 52 weeks -->
+          </div>
+
+          <!-- Centered Glowing Title -->
+          <div class="workplace-title-bar">
+            <h2 class="workplace-title">Ranjeet's Contribution Workplace</h2>
+          </div>
+
+          <!-- Top-Left Legend Floating -->
+          <div class="heatmap-legend">
+            <div class="leg-item"><i class="leg-box l1"></i><span>1-4 commits</span></div>
+            <div class="leg-item"><i class="leg-box l2"></i><span>5-8</span></div>
+            <div class="leg-item"><i class="leg-box l3"></i><span>9+</span></div>
+          </div>
+
+        </div>
+
+        <!-- INTERACTIVE RETRO TOOLTIP -->
+        <div class="retro-tooltip" id="retroTooltip"></div>
+
+      </div>
+    </div>
+
+    <!-- LOWER SECTION: EXPANDED DEVOPS ECOSYSTEM & REPOSITORIES -->
+    <div class="lower-dashboard">
+
+      <!-- TECH STACK SHOWCASE -->
+      <section class="dashboard-card tech-stack-card">
+        <div class="card-head">
+          <div class="card-title">
+            <span class="pill-dot"></span>
+            <h3>🧰 CLOUD & DEVOPS ENGINEERING TOOLSET</h3>
+          </div>
+          <span class="sub-label">CORE INFRASTRUCTURE &bull; AUTOMATION &bull; MONITORING</span>
+        </div>
+        <div class="tech-grid">
+          <div class="tech-tile"><img src="https://cdn.simpleicons.org/git/F05032" alt="Git"><b>Git</b><small>Version Control</small></div>
+          <div class="tech-tile"><img src="https://cdn.simpleicons.org/github/ffffff" alt="GitHub"><b>GitHub</b><small>Collaboration</small></div>
+          <div class="tech-tile"><img src="https://cdn.simpleicons.org/docker/2496ED" alt="Docker"><b>Docker</b><small>Containers</small></div>
+          <div class="tech-tile"><img src="https://cdn.simpleicons.org/kubernetes/326CE5" alt="Kubernetes"><b>Kubernetes</b><small>Orchestration</small></div>
+          <div class="tech-tile"><img src="https://cdn.simpleicons.org/amazonaws/FF9900" alt="AWS"><b>AWS</b><small>Cloud Architecture</small></div>
+          <div class="tech-tile"><img src="https://cdn.simpleicons.org/terraform/844FBA" alt="Terraform"><b>Terraform</b><small>IaC Automation</small></div>
+          <div class="tech-tile"><img src="https://cdn.simpleicons.org/python/3776AB" alt="Python"><b>Python</b><small>Scripting & Tools</small></div>
+          <div class="tech-tile"><img src="https://cdn.simpleicons.org/linux/FCC624" alt="Linux"><b>Linux</b><small>Kernel & Systems</small></div>
+          <div class="tech-tile"><img src="https://cdn.simpleicons.org/grafana/F46800" alt="Grafana"><b>Grafana</b><small>Dashboards</small></div>
+          <div class="tech-tile"><img src="https://cdn.simpleicons.org/prometheus/E6522C" alt="Prometheus"><b>Prometheus</b><small>Metrics & Alerts</small></div>
+          <div class="tech-tile"><img src="https://cdn.simpleicons.org/githubactions/2088FF" alt="CI/CD"><b>GitHub Actions</b><small>CI/CD Pipelines</small></div>
+          <div class="tech-tile"><img src="https://cdn.simpleicons.org/nginx/009639" alt="NGINX"><b>NGINX</b><small>Reverse Proxy</small></div>
+        </div>
+      </section>
+
+      <!-- TWO COLUMN: FEATURED REPOS & LIVE TERMINAL LOGS -->
+      <div class="dashboard-columns">
+        
+        <!-- FEATURED REPOSITORIES -->
+        <section class="dashboard-card repos-card">
+          <div class="card-head">
+            <div class="card-title">
+              <span class="pill-dot green"></span>
+              <h3>📂 FEATURED REPOSITORIES</h3>
+            </div>
+            <span class="sub-label">PUBLIC CODEBASES</span>
+          </div>
+          <div class="repos-grid" id="reposGrid">
+            <!-- Populated via app.js -->
+            <a href="https://github.com/ranjeetkumarguptabro-maker/cloudcost-pilot" target="_blank" rel="noopener" class="repo-card">
+              <div class="repo-card-head">
+                <span class="repo-name">cloudcost-pilot</span>
+                <span class="lang-tag python">Python</span>
+              </div>
+              <p class="repo-desc">Cloud cost monitoring & infrastructure budget autopilot for AWS cloud workloads.</p>
+              <div class="repo-card-footer">
+                <span>⭐ 0</span>
+                <span>🔄 Active</span>
+              </div>
+            </a>
+            <a href="https://github.com/ranjeetkumarguptabro-maker/dataops-guardian" target="_blank" rel="noopener" class="repo-card">
+              <div class="repo-card-head">
+                <span class="repo-name">dataops-guardian</span>
+                <span class="lang-tag python">Python</span>
+              </div>
+              <p class="repo-desc">Python automation toolkit for health checks, preflight validation, and automated CI testing.</p>
+              <div class="repo-card-footer">
+                <span>⭐ 0</span>
+                <span>🔄 Active</span>
+              </div>
+            </a>
+            <a href="https://github.com/ranjeetkumarguptabro-maker/BlindAI" target="_blank" rel="noopener" class="repo-card">
+              <div class="repo-card-head">
+                <span class="repo-name">BlindAI</span>
+                <span class="lang-tag swift">Swift</span>
+              </div>
+              <p class="repo-desc">Assistive smart-navigation iOS application and AI perception engine for visually impaired pedestrians.</p>
+              <div class="repo-card-footer">
+                <span>⭐ 0</span>
+                <span>🔄 Active</span>
+              </div>
+            </a>
+            <a href="https://github.com/ranjeetkumarguptabro-maker/calc-lab-home" target="_blank" rel="noopener" class="repo-card">
+              <div class="repo-card-head">
+                <span class="repo-name">calc-lab-home</span>
+                <span class="lang-tag c">C</span>
+              </div>
+              <p class="repo-desc">Low-level arithmetic expression parser and evaluator developed for systems coursework.</p>
+              <div class="repo-card-footer">
+                <span>⭐ 0</span>
+                <span>🔄 Active</span>
+              </div>
+            </a>
+          </div>
+        </section>
+
+        <!-- LIVE TERMINAL CONSOLE -->
+        <section class="dashboard-card terminal-card">
+          <div class="card-head">
+            <div class="card-title">
+              <span class="pill-dot amber"></span>
+              <h3>💻 TELEMETRY CONSOLE</h3>
+            </div>
+            <span class="sub-label">REAL-TIME SYSTEM LOGS</span>
+          </div>
+          <div class="terminal-body" id="terminalLog">
+            <div class="term-line info">[INIT] Ranjeet's Contribution Workplace initializing...</div>
+            <div class="term-line success">[OK] Base pixel artwork mounted (1696x858 RGBA).</div>
+            <div class="term-line success">[OK] Web Audio 8-bit synthesizer ready.</div>
+            <div class="term-line info">[SYNC] Querying GitHub Public API for ranjeetkumarguptabro-maker...</div>
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+
+    <!-- PAGE FOOTER -->
+    <footer class="hud-footer">
+      <div class="footer-left">
+        <span>&copy; 2026 RANJEET KUMAR GUPTA &bull; COMPUTER SYSTEMS STUDENT AT RIGA TECHNICAL UNIVERSITY</span>
+      </div>
+      <div class="footer-center">
+        <em>BUILD &bull; AUTOMATE &bull; MONITOR &bull; REPEAT</em>
+      </div>
+      <div class="footer-right">
+        <span id="lastSyncedTime">Last synced: Just now</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- EMBED / README MODAL -->
+  <div class="modal-backdrop" id="readmeModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span>📋</span>
+          <h3>GITHUB PROFILE README INTEGRATION</h3>
+        </div>
+        <button id="modalCloseBtn" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-intro">
+          Copy this Markdown code directly into your GitHub Profile repository (<code class="highlight-code">ranjeetkumarguptabro-maker/ranjeetkumarguptabro-maker</code>) <code class="highlight-code">README.md</code>. It embeds your animated workplace graphic and links to this live interactive dashboard!
+        </p>
+
+        <div class="code-box-header">
+          <span>README.md Code</span>
+          <button id="copyCodeBtn" class="copy-btn">📋 Copy Markdown</button>
+        </div>
+        <textarea id="markdownCodeArea" class="code-textarea" readonly rows="12"></textarea>
+
+        <div class="modal-guide">
+          <h4>🚀 2-Minute Deployment Guide to GitHub Pages:</h4>
+          <ol>
+            <li>Create a new public repository: <code class="highlight-code">ranjeet-contribution-workplace</code></li>
+            <li>Upload all files from this project (<code class="highlight-code">index.html</code>, <code class="highlight-code">style.css</code>, <code class="highlight-code">app.js</code>, <code class="highlight-code">.nojekyll</code>, and the <code class="highlight-code">assets/</code> folder).</li>
+            <li>In repo <b>Settings &rarr; Pages</b>: select <b>Deploy from branch</b>, choose <code class="highlight-code">main</code> branch and <code class="highlight-code">/ (root)</code>, then click <b>Save</b>.</li>
+            <li>Your live dashboard will be accessible at: <br><a href="https://ranjeetkumarguptabro-maker.github.io/ranjeet-contribution-workplace/" target="_blank" class="live-url">https://ranjeetkumarguptabro-maker.github.io/ranjeet-contribution-workplace/</a></li>
+          </ol>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="modalDoneBtn" class="hud-btn primary">DONE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="app.js"></script>
+</body>
+</html>
