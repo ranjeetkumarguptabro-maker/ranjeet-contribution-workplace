@@ -22,7 +22,7 @@ An interactive, retro-cyberpunk developer dashboard and live telemetry workstati
   - Live animated green mountain telemetry wave, yellow network wave, and cyan request bars.
   - Interactive radial dials: **CPU (42%)**, **RAM (68%)**, and **P95 Latency (132ms)** with dynamic jitter simulation.
   - Time range selector: `[ 1H ] [ 24H ] [ 7D ]` with dynamic frequency adjustment.
-  - Interactive tabs: `GRAFANA`, `GITHUB`, `CORE STACK` (Python, Go, JavaScript, CSS), and `ACTIVITY`.
+  - Interactive tabs: `GRAFANA`, `GITHUB`, `EXPERT STACK` (Python, Go, JavaScript, CSS), and `ACTIVITY`.
 - **Right Monitor (Interactive AWS Infrastructure Blueprint):**
   - Architecture map within a VPC: **Users &rarr; ALB &rarr; EKS &rarr; RDS**, plus **S3, CloudFront CDN, and CloudWatch**.
   - Animated glowing data packet flows traversing the network paths in real time.
