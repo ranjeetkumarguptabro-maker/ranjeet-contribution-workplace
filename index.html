@@ -501,19 +501,7 @@
                 <span>🔄 Production Ready</span>
               </div>
             </a>
-            <!-- 2. Cloud Cost Pilot -->
-            <a href="https://github.com/ranjeetkumarguptabro-maker/cloudcost-pilot" target="_blank" rel="noopener" class="repo-card">
-              <div class="repo-card-head">
-                <span class="repo-name">cloudcost-pilot</span>
-                <span class="lang-tag python">Python · AWS API</span>
-              </div>
-              <p class="repo-desc">Cloud cost monitoring &amp; infrastructure budget autopilot for AWS cloud workloads and automated resource optimization.</p>
-              <div class="repo-card-footer">
-                <span>⭐ 0</span>
-                <span>🔄 Active</span>
-              </div>
-            </a>
-            <!-- 3. DataOps Guardian -->
+            <!-- 2. DataOps Guardian -->
             <a href="https://github.com/ranjeetkumarguptabro-maker/dataops-guardian" target="_blank" rel="noopener" class="repo-card">
               <div class="repo-card-head">
                 <span class="repo-name">dataops-guardian</span>
@@ -547,65 +535,125 @@
 
       </div>
 
-      <!-- 360° & 90° MULTI-AXIS ACTIVITY & STRESS BREAKDOWN GRAPH -->
+      <!-- MODERN CODING SKILLS DASHBOARD (EXACT LIKE REFERENCE) -->
+      <section class="dashboard-card coding-skills-card">
+        <div class="card-head">
+          <div class="card-title">
+            <span class="pill-dot purple"></span>
+            <h3>💻 CORE LANGUAGES &amp; CODING SKILLS</h3>
+          </div>
+          <span class="sub-label">PROVEN DOMAIN EXPERTISE &bull; CLOUD &bull; SYSTEMS &bull; FULLSTACK</span>
+        </div>
+        <div class="modern-skills-dashboard">
+          <!-- Left Retro Rig Illustration with Tux -->
+          <div class="skills-retro-col">
+            <img src="assets/coding-retro-rig.png" alt="Retro Coding Rig with Tux" class="skills-retro-img">
+          </div>
+          <!-- 4 Interactive Cards matching Modern Coding Skills Dashboard -->
+          <div class="skills-cards-row">
+            <!-- Card 1: Python -->
+            <div class="modern-skill-card card-python active" title="Python: Cloud automation & tooling">
+              <div class="skill-card-icon">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python">
+              </div>
+              <div class="skill-card-name">Python</div>
+              <div class="skill-card-badge badge-python">95%</div>
+              <div class="skill-card-bar bar-python"><i style="width: 95%"></i></div>
+            </div>
+
+            <!-- Card 2: Go -->
+            <div class="modern-skill-card card-go" title="Go: Systems architecture & microservices">
+              <div class="skill-card-icon">
+                <img src="https://skillicons.dev/icons?i=go" alt="Go">
+              </div>
+              <div class="skill-card-name">Go</div>
+              <div class="skill-card-badge badge-go">85%</div>
+              <div class="skill-card-bar bar-go"><i style="width: 85%"></i></div>
+            </div>
+
+            <!-- Card 3: JavaScript -->
+            <div class="modern-skill-card card-js" title="JavaScript: Fullstack dashboards & APIs">
+              <div class="skill-card-icon">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JavaScript">
+              </div>
+              <div class="skill-card-name">JavaScript</div>
+              <div class="skill-card-badge badge-js">75%</div>
+              <div class="skill-card-bar bar-js"><i style="width: 75%"></i></div>
+            </div>
+
+            <!-- Card 4: CSS / HTML -->
+            <div class="modern-skill-card card-css" title="CSS / HTML: Responsive & Cyberpunk design">
+              <div class="skill-card-icon dual">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML5">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" alt="CSS3">
+              </div>
+              <div class="skill-card-name">CSS / HTML</div>
+              <div class="skill-card-badge badge-css">80%</div>
+              <div class="skill-card-bar bar-css"><i style="width: 80%"></i></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GITHUB ACTIVITY STATUS & RADAR METRICS (LIVE INFOGRAPHIC MATCHING SCREENSHOT) -->
       <section class="dashboard-card activity-graph-card">
         <div class="card-head">
           <div class="card-title">
             <span class="pill-dot cyan"></span>
-            <h3>📊 ACTIVITY &amp; STRESS BREAKDOWN (360° / 90° POLAR RADAR)</h3>
+            <h3>📊 GITHUB ACTIVITY STATUS &amp; RADAR METRICS</h3>
           </div>
-          <span class="sub-label">COMMITS &bull; PULL REQUESTS &bull; FORKS &bull; STARS STRESS LOAD</span>
+          <span class="sub-label">COMMITS &bull; PULL REQUESTS &bull; FORKS &bull; COMMUNITY STARS</span>
         </div>
-        <div class="stress-radar-layout">
-          <!-- Canvas for 360/90 degree Radar -->
-          <div class="radar-canvas-wrap">
-            <canvas id="radarCanvas" width="340" height="340" class="radar-canvas"></canvas>
-          </div>
-          <!-- Metrics Breakdown Cards -->
-          <div class="stress-metrics-grid">
-            <div class="stress-metric-card north">
-              <div class="stress-card-head">
-                <span class="axis-angle">90° VERTICAL (NORTH)</span>
-                <span class="stress-badge high">HIGH STRESS · 94%</span>
+        <div class="metrics-radar-infographic-wrap">
+          <div class="radar-interactive-container" id="radarInteractiveContainer">
+            <!-- 1. Top Card: 90° Commits -->
+            <div class="infographic-node-card node-north" id="nodeCardCommits" title="90° Vertical - Commits">
+              <div class="node-card-icon code-icon">&lt;/&gt;</div>
+              <div class="node-card-content">
+                <span class="node-angle">90°</span>
+                <strong class="node-val" id="radarCommitsVal">322+</strong>
               </div>
-              <strong class="stress-number" id="stressCommitsNum">322+</strong>
-              <div class="stress-name">Commits &amp; Code Pushes</div>
-              <div class="stress-bar"><i style="width: 94%"></i></div>
-              <small>Consistent daily commits, infrastructure automation scripts, and workflow iterations.</small>
+              <div class="node-pill pill-pink">94%</div>
             </div>
 
-            <div class="stress-metric-card east">
-              <div class="stress-card-head">
-                <span class="axis-angle">360° / 0° HORIZONTAL (EAST)</span>
-                <span class="stress-badge med">MED STRESS · 68%</span>
+            <!-- 2. Right Card: 360° Pull Requests -->
+            <div class="infographic-node-card node-east" id="nodeCardPrs" title="360° Horizontal - Pull Requests">
+              <div class="node-card-icon pr-icon">☊</div>
+              <div class="node-card-content">
+                <span class="node-angle">360°</span>
+                <strong class="node-val">28</strong>
               </div>
-              <strong class="stress-number">28</strong>
-              <div class="stress-name">Pull Requests &amp; CI Merges</div>
-              <div class="stress-bar"><i style="width: 68%"></i></div>
-              <small>Feature branches merged with passing GitHub Actions preflight validations.</small>
+              <div class="node-pill pill-amber">68%</div>
             </div>
 
-            <div class="stress-metric-card south">
-              <div class="stress-card-head">
-                <span class="axis-angle">270° VERTICAL (SOUTH)</span>
-                <span class="stress-badge mod">MODERATE · 48%</span>
+            <!-- 3. Bottom Card: 270° Forks -->
+            <div class="infographic-node-card node-south" id="nodeCardForks" title="270° Vertical - Forks">
+              <div class="node-card-icon fork-icon">⑂</div>
+              <div class="node-card-content">
+                <span class="node-angle">270°</span>
+                <strong class="node-val">16</strong>
               </div>
-              <strong class="stress-number">16</strong>
-              <div class="stress-name">Forks &amp; Upstream Contributions</div>
-              <div class="stress-bar"><i style="width: 48%"></i></div>
-              <small>Open-source tooling experiments and course lab repositories.</small>
+              <div class="node-pill pill-blue">48%</div>
             </div>
 
-            <div class="stress-metric-card west">
-              <div class="stress-card-head">
-                <span class="axis-angle">180° HORIZONTAL (WEST)</span>
-                <span class="stress-badge glow">GROWING · 38%</span>
+            <!-- 4. Left Card: 180° Stars -->
+            <div class="infographic-node-card node-west" id="nodeCardStars" title="180° Horizontal - Stars">
+              <div class="node-card-icon star-icon">★</div>
+              <div class="node-card-content">
+                <span class="node-angle">180°</span>
+                <strong class="node-val">12</strong>
               </div>
-              <strong class="stress-number">12</strong>
-              <div class="stress-name">Stars &amp; Community Engagement</div>
-              <div class="stress-bar"><i style="width: 38%"></i></div>
-              <small>Public repository reach across DevOps and systems engineering domains.</small>
+              <div class="node-pill pill-cyan">38%</div>
             </div>
+
+            <!-- Center GitHub Octocat Badge -->
+            <div class="radar-center-octocat">
+              <img src="https://cdn.simpleicons.org/github/000000" alt="GitHub" class="octocat-icon">
+              <div class="octocat-glow-aura"></div>
+            </div>
+
+            <!-- Live Canvas for organic kite radar and concentric rings -->
+            <canvas id="radarCanvas" width="600" height="600" class="radar-infographic-canvas"></canvas>
           </div>
         </div>
       </section>

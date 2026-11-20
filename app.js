@@ -225,7 +225,8 @@
         state.totalContributions = Math.max(322, sum, contribData.value.total?.lastYear || 322);
         $('statContribs').textContent = `${state.totalContributions}+`;
         $('headerContribCount').textContent = `${state.totalContributions} COMMITS (2025-2026)`;
-        $('stressCommitsNum').textContent = `${state.totalContributions}+`;
+        const radarCommits = $('radarCommitsVal');
+        if (radarCommits) radarCommits.textContent = `${state.totalContributions}+`;
         renderContributionGrid(state.contributions);
         logTerminal(`[OK] Mounted ${state.totalContributions} live GitHub contributions into workplace grid!`, 'success');
       } else {
@@ -346,101 +347,179 @@
     if (tooltip) tooltip.style.display = 'none';
   }
 
-  // --- 360° / 90° POLAR RADAR GRAPH (STRESS LOAD) ---
+  // --- GITHUB ACTIVITY STATUS & RADAR INFOGRAPHIC (MATCHING REFERENCE IMAGE) ---
   function initRadarGraph() {
     const canvas = $('radarCanvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
+
+    const w = 600;
+    const h = 600;
+    canvas.width = w;
+    canvas.height = h;
     const cx = w / 2;
     const cy = h / 2;
-    const maxR = w * 0.4;
+    const maxR = 210;
 
-    // Metrics configuration:
-    // North (90° / -PI/2): Commits (94%)
-    // East (360°/0° / 0 rad): PRs (68%)
-    // South (270° / PI/2): Forks (48%)
-    // West (180° / PI): Stars (38%)
+    // Cardinal Axes matching Reference Infographic:
+    // 1. North: 90° Vertical - Commits (Pink / Magenta, 94%)
+    // 2. East:  360° Horizontal - Pull Requests (Amber / Gold, 68%)
+    // 3. South: 270° Vertical - Forks (Blue / Indigo, 48%)
+    // 4. West:  180° Horizontal - Stars (Cyan / Teal, 38%)
     const axes = [
-      { name: 'Commits (90°)', val: 0.94, num: '322+', color: '#ff2a55', angle: -Math.PI / 2 },
-      { name: 'PRs (360°)', val: 0.68, num: '28', color: '#ff9028', angle: 0 },
-      { name: 'Forks (270°)', val: 0.48, num: '16', color: '#38e1ff', angle: Math.PI / 2 },
-      { name: 'Stars (180°)', val: 0.38, num: '12', color: '#ba54ff', angle: Math.PI }
+      { name: 'Commits (90°)', val: 0.94, num: '322+', color: '#ec4899', angle: -Math.PI / 2 },
+      { name: 'PRs (360°)', val: 0.68, num: '28', color: '#f59e0b', angle: 0 },
+      { name: 'Forks (270°)', val: 0.48, num: '16', color: '#3b82f6', angle: Math.PI / 2 },
+      { name: 'Stars (180°)', val: 0.38, num: '12', color: '#06b6d4', angle: Math.PI }
     ];
+
+    // Node Cards Click Listeners for inspection & SFX
+    const cardCommits = $('nodeCardCommits');
+    const cardPrs = $('nodeCardPrs');
+    const cardForks = $('nodeCardForks');
+    const cardStars = $('nodeCardStars');
+
+    if (cardCommits) cardCommits.addEventListener('click', () => {
+      sfx.click();
+      logTerminal(`[RADAR 90°] Commits: ${state.totalContributions || 322}+ verified contributions across cloud & systems repositories.`, 'info');
+    });
+    if (cardPrs) cardPrs.addEventListener('click', () => {
+      sfx.click();
+      logTerminal('[RADAR 360°] Pull Requests: 28 reviewed & merged via GitHub Actions CI/CD pipelines.', 'info');
+    });
+    if (cardForks) cardForks.addEventListener('click', () => {
+      sfx.click();
+      logTerminal('[RADAR 270°] Forks: 16 collaborative cloud architecture & systems experiments.', 'info');
+    });
+    if (cardStars) cardStars.addEventListener('click', () => {
+      sfx.click();
+      logTerminal('[RADAR 180°] Stars: 12 community recognitions across open-source DevOps tooling.', 'info');
+    });
 
     function renderRadar() {
       state.radarTick++;
       ctx.clearRect(0, 0, w, h);
 
-      // 1. Concentric circles (25%, 50%, 75%, 100%)
-      ctx.strokeStyle = '#142a4a';
+      // 1. Concentric Circular Radar Grid (5 rings: 20%, 40%, 60%, 80%, 100%)
+      ctx.strokeStyle = 'rgba(56, 225, 255, 0.12)';
       ctx.lineWidth = 1;
-      [0.25, 0.5, 0.75, 1.0].forEach(level => {
+      [0.2, 0.4, 0.6, 0.8, 1.0].forEach(level => {
         ctx.beginPath();
         ctx.arc(cx, cy, maxR * level, 0, Math.PI * 2);
         ctx.stroke();
       });
 
-      // 2. Cross Axes (90° vertical & 360° horizontal)
-      ctx.strokeStyle = '#1c3d69';
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      // Horizontal
-      ctx.moveTo(cx - maxR - 10, cy);
-      ctx.lineTo(cx + maxR + 10, cy);
-      // Vertical
-      ctx.moveTo(cx, cy - maxR - 10);
-      ctx.lineTo(cx, cy + maxR + 10);
-      ctx.stroke();
+      // 2. Radial Dashed Ray Lines (12 radial compass lines)
+      ctx.save();
+      ctx.strokeStyle = 'rgba(56, 225, 255, 0.08)';
+      ctx.setLineDash([3, 5]);
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 12; i++) {
+        const theta = (i * Math.PI * 2) / 12;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(theta) * maxR, cy + Math.sin(theta) * maxR);
+        ctx.stroke();
+      }
+      ctx.restore();
 
-      // 3. Dynamic Pulsing Polygon Web
-      const pulse = Math.sin(state.radarTick * 0.05) * 0.03;
+      // 3. Outer Glowing Rainbow Ring Boundary
+      ctx.save();
+      ctx.lineWidth = 2;
+      const ringGrad = ctx.createConicGradient(0, cx, cy);
+      ringGrad.addColorStop(0.0, 'rgba(236, 72, 153, 0.5)');
+      ringGrad.addColorStop(0.25, 'rgba(245, 158, 11, 0.5)');
+      ringGrad.addColorStop(0.5, 'rgba(59, 130, 246, 0.5)');
+      ringGrad.addColorStop(0.75, 'rgba(6, 182, 212, 0.5)');
+      ringGrad.addColorStop(1.0, 'rgba(236, 72, 153, 0.5)');
+      ctx.strokeStyle = ringGrad;
       ctx.beginPath();
-      axes.forEach((axis, i) => {
-        const r = maxR * (axis.val + pulse);
-        const x = cx + Math.cos(axis.angle) * r;
-        const y = cy + Math.sin(axis.angle) * r;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+      ctx.arc(cx, cy, maxR + 18, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+
+      // 4. Subtle Breathing Pulse for Kite Polygon
+      const pulse = Math.sin(state.radarTick * 0.04) * 0.02;
+
+      // Compute Vertex Points for the 4 cardinal directions
+      const points = axes.map(axis => {
+        const r = maxR * Math.min(1.0, axis.val + pulse);
+        return {
+          x: cx + Math.cos(axis.angle) * r,
+          y: cy + Math.sin(axis.angle) * r,
+          r: r,
+          color: axis.color,
+          angle: axis.angle
+        };
       });
+
+      // 5. Draw the 4 Cardinal Axis Lines from Center
+      points.forEach(pt => {
+        ctx.save();
+        ctx.strokeStyle = pt.color;
+        ctx.lineWidth = 1.5;
+        ctx.globalAlpha = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(pt.x, pt.y);
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      // 6. Draw the Organic 4-Point Curved Rainbow Kite Polygon
+      // Connecting points with smooth quadratic curves pinched toward center
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+
+      for (let i = 0; i < 4; i++) {
+        const curr = points[i];
+        const next = points[(i + 1) % 4];
+        const midAngle = curr.angle + Math.PI / 4;
+        const ctrlR = (curr.r + next.r) * 0.35;
+        const ctrlX = cx + Math.cos(midAngle) * ctrlR;
+        const ctrlY = cy + Math.sin(midAngle) * ctrlR;
+
+        ctx.quadraticCurveTo(ctrlX, ctrlY, next.x, next.y);
+      }
       ctx.closePath();
 
-      // Gradient Fill
-      const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, maxR);
-      grad.addColorStop(0, 'rgba(56, 225, 255, 0.35)');
-      grad.addColorStop(0.7, 'rgba(186, 84, 255, 0.2)');
-      grad.addColorStop(1, 'rgba(255, 42, 85, 0.15)');
-      ctx.fillStyle = grad;
+      // Multi-stop Radiant Gradient Fill matching the infographic
+      const kiteGrad = ctx.createLinearGradient(cx - maxR * 0.6, cy - maxR, cx + maxR * 0.6, cy + maxR);
+      kiteGrad.addColorStop(0.0, 'rgba(236, 72, 153, 0.78)'); // Vibrant Pink (North)
+      kiteGrad.addColorStop(0.35, 'rgba(245, 158, 11, 0.78)'); // Amber / Gold (East)
+      kiteGrad.addColorStop(0.70, 'rgba(59, 130, 246, 0.78)'); // Blue (South)
+      kiteGrad.addColorStop(1.0, 'rgba(6, 182, 212, 0.82)');  // Cyan (West)
+
+      ctx.fillStyle = kiteGrad;
+      ctx.shadowColor = 'rgba(56, 225, 255, 0.4)';
+      ctx.shadowBlur = 18;
       ctx.fill();
 
-      ctx.strokeStyle = '#38e1ff';
-      ctx.lineWidth = 2;
-      ctx.shadowColor = '#38e1ff';
-      ctx.shadowBlur = 8;
+      // Glowing outer rim of the kite
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+      ctx.shadowColor = '#ffffff';
+      ctx.shadowBlur = 10;
       ctx.stroke();
-      ctx.shadowBlur = 0;
+      ctx.restore();
 
-      // 4. Axis Data Points & Labels
-      axes.forEach(axis => {
-        const r = maxR * (axis.val + pulse);
-        const x = cx + Math.cos(axis.angle) * r;
-        const y = cy + Math.sin(axis.angle) * r;
-
-        // Glowing dot
-        ctx.fillStyle = axis.color;
+      // 7. Draw Glowing Concentric Node Markers at each Vertex
+      points.forEach(pt => {
+        ctx.save();
+        ctx.shadowColor = pt.color;
+        ctx.shadowBlur = 14;
+        ctx.strokeStyle = pt.color;
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.arc(pt.x, pt.y, 7, 0, Math.PI * 2);
+        ctx.stroke();
 
-        // Label on outer edge
-        const lx = cx + Math.cos(axis.angle) * (maxR + 18);
-        const ly = cy + Math.sin(axis.angle) * (maxR + 18);
-        ctx.font = '9px "JetBrains Mono", monospace';
-        ctx.fillStyle = '#a6c5eb';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(`${axis.name.split(' ')[0]} (${axis.num})`, lx, ly);
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
       });
 
       requestAnimationFrame(renderRadar);

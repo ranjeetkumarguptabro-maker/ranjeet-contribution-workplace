@@ -28,13 +28,14 @@ An interactive, retro-cyberpunk developer dashboard and live telemetry workstati
   - Animated glowing data packet flows traversing the network paths in real time.
   - Clickable nodes opening a real-time HUD inspection drawer with architectural roles and metrics.
 - **PC Tower Rig with Cooling Fans:**
-  - Dynamic `CPU 38%` display with scrolling green ECG telemetry wave.
-  - Dual glowing purple RGB cooling fans with interactive click for **TURBO mode** (4,200 RPM)!
-- **360° / 90° Polar Activity & Stress Radar Graph:**
-  - North (90° Vertical): **322+ Commits** (94% High Stress)
-  - East (360° Horizontal): **28 Pull Requests** (68% Medium Stress)
-  - South (270° Vertical): **16 Forks** (48% Moderate Stress)
-  - West (180° Horizontal): **12 Stars** (38% Growing Engagement)
+  - Dynamic `CPU 38%` display with scrolling green ECG telemetry wave, dual RGB fans with interactive TURBO mode.
+- **Modern Coding Skills Dashboard:**
+  - Sleek cards for **Python (95%)**, **Go (85%)**, **JavaScript (75%)**, and **CSS / HTML (80%)** paired with retro workstation illustration.
+- **360° / 90° Polar Activity & Radar Metrics Infographic:**
+  - North (90° Vertical): **322+ Commits** (94% High Activity)
+  - East (360° Horizontal): **28 Pull Requests** (68% Review & Merges)
+  - South (270° Vertical): **16 Forks** (48% Experiments)
+  - West (180° Horizontal): **12 Stars** (38% Community Recognition)
 - **Verified Certifications & Learning:**
   - **Introduction to Kubernetes (LFS158)** — *The Linux Foundation* (`LF-9zgw8gacep`)
   - **AWS Cloud Practitioner Essentials** — *Amazon Web Services (AWS)*
