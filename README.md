@@ -61,8 +61,11 @@ ranjeet-contribution-workplace/
 ├── PROFILE_README.md     # Ready-to-copy GitHub profile README
 ├── .nojekyll             # Ensures GitHub Pages serves static files directly
 └── assets/
-    ├── workplace-contribution.gif   # Optimized 500 KB animated graphic
-    ├── workplace-contribution.png   # Full 1696x858 master pixel-art artwork
+    ├── github-metrics-radar.svg     # Standalone vector SVG radar build
+    ├── github-metrics-radar.png     # Master 1536x1024 radar reference graphic
+    ├── coding-skills-dashboard.png  # Core languages retro dashboard visual
+    ├── workplace-contribution.gif   # Optimized animated workstation graphic
+    ├── workplace-contribution.png   # Full master pixel-art artwork
     └── certificates/
         ├── aws-cloud-practitioner.jpeg   # AWS Cloud Practitioner Certificate
         └── kubernetes-lfs158.jpeg        # Linux Foundation Kubernetes Certificate

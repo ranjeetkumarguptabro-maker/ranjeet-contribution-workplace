@@ -353,13 +353,13 @@
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    const w = 600;
-    const h = 600;
+    const w = 500;
+    const h = 500;
     canvas.width = w;
     canvas.height = h;
     const cx = w / 2;
     const cy = h / 2;
-    const maxR = 210;
+    const maxR = 175;
 
     // Cardinal Axes matching Reference Infographic:
     // 1. North: 90° Vertical - Commits (Pink / Magenta, 94%)

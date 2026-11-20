@@ -1615,8 +1615,8 @@ html, body {
 
 .radar-interactive-container {
   position: relative;
-  width: 580px;
-  height: 580px;
+  width: 500px;
+  height: 500px;
   max-width: 100%;
   aspect-ratio: 1 / 1;
   display: flex;
