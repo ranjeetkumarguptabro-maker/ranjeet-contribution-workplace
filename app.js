@@ -1047,7 +1047,7 @@
 
 # Ranjeet Kumar Gupta
 
-### Computer Systems Student &bull; DevOps & Cloud Engineering
+### Computer Systems Student &bull; Aspiring DevOps & Cloud Engineer
 
 <p>
   <a href="https://www.linkedin.com/in/ranjeet-kumar-gupta-7b37132a3" target="_blank">
