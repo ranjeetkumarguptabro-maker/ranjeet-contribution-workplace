@@ -61,7 +61,8 @@ ranjeet-contribution-workplace/
     ├── workplace-contribution.png   # Full master pixel-art artwork
     └── certificates/
         ├── aws-cloud-practitioner.jpeg   # AWS Cloud Practitioner Certificate
-        └── kubernetes-lfs158.jpeg        # Linux Foundation Kubernetes Certificate
+        ├── kubernetes-lfs158.jpeg        # Linux Foundation Kubernetes Certificate
+        └── python-kaggle.png             # Kaggle Python Certificate
 ```
 
 ---

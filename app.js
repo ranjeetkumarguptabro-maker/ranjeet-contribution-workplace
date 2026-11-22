@@ -898,6 +898,17 @@
       });
     }
 
+    const certPython = $('certPython');
+    if (certPython) {
+      certPython.addEventListener('click', () => {
+        sfx.chime();
+        modalTitle.textContent = 'Python · Kaggle Learn';
+        modalImg.src = 'assets/certificates/python-kaggle.png';
+        modal.classList.add('open');
+        logTerminal('[CREDENTIAL] Inspected Kaggle Python Certificate.', 'info');
+      });
+    }
+
     if (closeBtn && modal) {
       closeBtn.addEventListener('click', () => {
         sfx.click();
