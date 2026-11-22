@@ -31,6 +31,7 @@ An interactive, retro-cyberpunk developer dashboard and live telemetry workstati
   - Dynamic `CPU 38%` display with scrolling green ECG telemetry wave, dual RGB fans with interactive TURBO mode.
 - **Verified Certifications & Learning:**
   - **Introduction to Kubernetes (LFS158)** — *The Linux Foundation* (`LF-9zgw8gacep`)
+  - **Python** — *Kaggle Learn*
   - **AWS Cloud Practitioner Essentials** — *Amazon Web Services (AWS)*
   - Interactive lightbox zoom modal.
 - **Bottom Contribution Heatmap Timeline:**
